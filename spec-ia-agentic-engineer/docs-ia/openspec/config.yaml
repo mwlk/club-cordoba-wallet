@@ -1,0 +1,36 @@
+project: club-cordoba-wallet
+language: es
+mode: single-folder
+root_dir: spec-ia-agentic-engineer
+context_file: spec-ia-agentic-engineer/docs-ia/PROJECT_CONTEXT.md
+change_dir: spec-ia-agentic-engineer/docs-ia/openspec/changes
+spec_dir: spec-ia-agentic-engineer/docs-ia/openspec/specs
+archive_dir: spec-ia-agentic-engineer/docs-ia/openspec/archive
+templates_dir: spec-ia-agentic-engineer/docs-ia/openspec/_templates
+agent_dir: spec-ia-agentic-engineer/docs-ia/ai-specs/agents
+agent_template: spec-ia-agentic-engineer/docs-ia/ai-specs/_templates/agent.md
+required_files:
+  full:
+    - proposal.md
+    - design.md
+    - tasks.md
+    - documentation.md
+    - specs/<funcionalidad>/spec.md
+  lite:
+    - lite.md
+    - tasks.md
+workflow:
+  setup: spec-ia-agentic-engineer/.cursor/commands/spec-setup.md
+  new: spec-ia-agentic-engineer/.cursor/commands/spec-new.md
+  apply: spec-ia-agentic-engineer/.cursor/commands/spec-apply.md
+  document: spec-ia-agentic-engineer/.cursor/commands/spec-document.md
+  review: spec-ia-agentic-engineer/.cursor/commands/spec-review.md
+  archive: spec-ia-agentic-engineer/.cursor/commands/spec-archive.md
+claude_commands:
+  setup: spec-ia-agentic-engineer/.claude/commands/sdd-setup.md
+  new: spec-ia-agentic-engineer/.claude/commands/sdd-new.md
+  new_lite: spec-ia-agentic-engineer/.claude/commands/sdd-new-lite.md
+  apply: spec-ia-agentic-engineer/.claude/commands/sdd-apply.md
+  document: spec-ia-agentic-engineer/.claude/commands/sdd-document.md
+  review: spec-ia-agentic-engineer/.claude/commands/sdd-review.md
+  archive: spec-ia-agentic-engineer/.claude/commands/sdd-archive.md

@@ -1,0 +1,13 @@
+.env
+.env.*
+node_modules/
+bin/
+obj/
+dist/
+build/
+.DS_Store
+Thumbs.db
+*.user
+*.suo
+*.log
+

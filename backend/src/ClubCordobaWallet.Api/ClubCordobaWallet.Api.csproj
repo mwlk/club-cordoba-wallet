@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>ClubCordobaWallet.Api</RootNamespace>
+    <UserSecretsId>club-cordoba-wallet-api</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClubCordobaWallet.Application\ClubCordobaWallet.Application.csproj" />
+    <ProjectReference Include="..\ClubCordobaWallet.Infrastructure\ClubCordobaWallet.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

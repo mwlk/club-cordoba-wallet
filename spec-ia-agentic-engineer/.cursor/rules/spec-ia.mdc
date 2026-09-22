@@ -1,0 +1,25 @@
+﻿---
+description: Flujo spec-driven generico para IA en modo carpeta unica
+alwaysApply: true
+---
+
+Antes de implementar:
+
+1. Leer `README.md` del proyecto si existe.
+2. Leer `spec-ia-agentic-engineer/AGENTS.md`.
+3. Leer `spec-ia-agentic-engineer/docs-ia/AI_USAGE.md`.
+4. Leer `spec-ia-agentic-engineer/docs-ia/PROJECT_CONTEXT.md` si existe.
+5. Leer `spec-ia-agentic-engineer/docs-ia/ai-specs/agents/*.md` si existe.
+6. Leer `spec-ia-agentic-engineer/docs-ia/openspec/config.yaml`.
+7. Leer el change activo en `spec-ia-agentic-engineer/docs-ia/openspec/changes/<change-name>/`.
+
+Reglas:
+
+- No programar si no existe spec.
+- No inventar decisiones de negocio: documentarlas en `spec.md` o `design.md`.
+- Mantener tareas actualizadas en `tasks.md`.
+- Respetar el rol, reglas tecnicas y checklist del agente del proyecto.
+- Verificar escenarios antes de marcar tareas.
+- Completar `documentation.md` antes de archivar.
+- Para archivar, usar `spec-archive`: actualizar spec estable si corresponde y mover el change completo de `openspec/changes/` a `openspec/archive/`.
+- Mantener todos los artefactos IA dentro de `spec-ia-agentic-engineer/`.
