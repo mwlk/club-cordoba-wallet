@@ -12,6 +12,7 @@ Este documento registra las decisiones tomadas frente a puntos no especificados 
 | Result pattern | `Result<T>` con `MessageKey`/`ErrorKey` en vez de excepciones para casos esperados | Los mensajes se resuelven vía `.resx` (`Messages.resx` / `Errors.resx`), habilitando i18n futura sin tocar lógica de negocio. |
 | Errores no controlados | Middleware global (`ExceptionHandlingMiddleware`) | Los controllers no llevan try/catch; una única política de manejo de errores. |
 | Logging | Serilog, sink a consola | Structured logging, legible en `docker logs`. |
+| Documentación de API / UI interactiva | `Microsoft.AspNetCore.OpenApi` (generación del documento OpenAPI) + **Scalar** (`Scalar.AspNetCore`) para la UI interactiva, en vez de Swashbuckle/Swagger UI | Desde .NET 9, la plantilla oficial de ASP.NET Core Web API reemplazó Swashbuckle por `Microsoft.AspNetCore.OpenApi` como generador nativo del documento OpenAPI (sin UI propia). Microsoft recomienda Scalar como cliente de UI interactiva sobre ese documento (`app.MapScalarApiReference()`), en vez de agregar Swashbuckle solo para tener una UI. Se sigue esa recomendación por ser el camino oficial actual del framework, sin dependencias de terceros no mantenidas por Microsoft para la generación del documento. Solo habilitado en `Development` (mismo criterio que ya tenía `MapOpenApi()`). Disponible en `http://localhost:5000/scalar/v1`. |
 
 ## Alta de socio — no hay endpoint separado
 
