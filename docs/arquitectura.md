@@ -46,8 +46,8 @@ Cada capa expone su propio `DependencyInjection.cs` (`AddApplication()`, `AddInf
    - Calcula `HMAC-SHA256` sobre ese JSON con la clave secreta (env var).
    - Arma el `proof` y devuelve la VC completa como JSON.
    - Si la clave HMAC no está configurada, lanza `IssuerSigningException`.
-7. Si el paso 6 falló, el handler devuelve `Result.Fail` — **no se persiste nada** (ni el `Member` recién creado en memoria, dado que el `SaveChanges` de `Member` ocurre antes pero la credencial nunca se persiste).
-8. Si tuvo éxito, se persiste el `Credential` con la VC completa en `vc_json`.
+7. Si el paso 6 falló, el handler devuelve `Result.Fail` — **no se persiste nada**: `Member` y `Credential` se agregan al `DbContext` sin commit propio, y el único `SaveChangesAsync` (vía `IUnitOfWork`) recién se ejecuta después de que el Issuer confirma la firma.
+8. Si tuvo éxito, se ejecuta ese único `SaveChangesAsync`: `Member` (si es nuevo) y `Credential` con la VC completa en `vc_json` quedan persistidos juntos.
 9. El controller responde con el DTO mínimo (`memberNumber`, `validFrom`, `validUntil`) para la pantalla de confirmación.
 
 ## Flujo UC02 — Listado

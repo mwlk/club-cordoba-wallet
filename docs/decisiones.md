@@ -44,7 +44,7 @@ Se decidió:
 | Formato de fecha | `yyyy-MM-ddTHH:mm:ssZ`, truncado a segundos | Un único `DateTime.UtcNow` truncado, reutilizado para `validFrom` y `proof.created` (deben coincidir, según el enunciado). |
 | `proofValue` | Base64 | El enunciado especifica textualmente "codificada en base64"; el ejemplo ilustrativo del documento parece hexadecimal, se prioriza el texto de la spec sobre el ejemplo. |
 | Clave HMAC | Variable de entorno / `dotnet user-secrets` en desarrollo, nunca hardcodeada | Requisito explícito del enunciado. La app falla al arrancar (`fail fast`) si la clave no está configurada. |
-| Falla de firma | No se persiste nada (ni `Member` si ya existía, ni `Credential`) | Requisito explícito (extensión 5a de UC01). |
+| Falla de firma | No se persiste nada (ni `Member` si ya existía, ni `Credential`) | Requisito explícito (extensión 5a de UC01). Implementado con `IUnitOfWork`: `MemberRepository`/`CredentialRepository` solo hacen `Add`, el commit único ocurre en el handler tras el éxito del Issuer. |
 
 ## Enums
 
