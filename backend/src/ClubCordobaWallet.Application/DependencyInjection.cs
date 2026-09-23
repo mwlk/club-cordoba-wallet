@@ -14,7 +14,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CreateCredentialCommand, Result<CreateCredentialResult>>,
             CreateCredentialCommandHandler>();
 
-        services.AddScoped<IQueryHandler<SearchMemberByDniQuery, Result<MemberSearchDto>>,
+        services.AddScoped<IQueryHandler<SearchMemberByDniQuery, Result<List<MemberSearchDto>>>,
             SearchMemberByDniQueryHandler>();
 
         services.AddScoped<IQueryHandler<GetCredentialsQuery, List<CredentialListDto>>,
