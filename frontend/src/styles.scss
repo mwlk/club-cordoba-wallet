@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════
    Design tokens globales — TODO el tema se controla desde acá.
    Ningún color/radio/sombra/espaciado hardcodeado en componentes:
-   siempre var(--cc-*) y var(--sys-*).
+   siempre var(--cc-*), var(--mat-sys-*) y var(--sys-*).
    ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
@@ -35,7 +35,7 @@
   --cc-cat-adulto-bg: var(--cc-brand-100);
   --cc-cat-juvenil: #0f766e;
   --cc-cat-juvenil-bg: #d9f2ee;
-  --cc-cat-nino: #b45309;
+  --cc-cat-nino: #92400e;
   --cc-cat-nino-bg: #fbeedd;
 
   /* ── Skeleton (shimmer de carga) ──────────────────────────────── */
@@ -61,12 +61,16 @@
   --cc-border: var(--cc-neutral-200);
   --cc-border-strong: var(--cc-neutral-300);
   --cc-text: var(--cc-neutral-900);
-  --cc-text-secondary: var(--cc-neutral-500);
+  --cc-text-secondary: var(--cc-neutral-600);
   --cc-text-disabled: var(--cc-neutral-400);
   --cc-primary: var(--cc-brand-700);
   --cc-primary-hover: var(--cc-brand-600);
-  --cc-primary-contrast: var(--cc-neutral-0);
+  /* El primary (navy) es fijo en ambos temas: el contraste es SIEMPRE blanco.
+     No usar var(--cc-neutral-0), que en modo oscuro se invierte a navy oscuro
+     y deja el título del header invisible sobre el gradiente azul. */
+  --cc-primary-contrast: #ffffff;
   --cc-accent: var(--cc-gold-500);
+  --cc-hover: rgba(15, 23, 42, 0.06);
 
   /* Contenedor suave de marca (avatars, superficies tintadas) */
   --cc-brand-soft: var(--cc-brand-100);
@@ -191,8 +195,9 @@
 
 /* ═══ Modo oscuro — misma arquitectura: solo se re-mapéan tokens ═══
    El prebuilt theme, los componentes de Material y los estilos propios
-   leen var(--cc-*) y var(--sys-*), así que al redefinirlos acá todo
-   (formularios, chips, snackbar, carnet…) cambia automáticamente.       */
+   leen var(--cc-*), var(--mat-sys-*) y var(--sys-*), así que al
+   redefinirlos acá todo (formularios, chips, snackbar, carnet…) cambia
+   automáticamente.                                                          */
 
 :root[data-theme='dark'] {
   /* Paleta de marca: conservamos el primary (navy) y aclaramos contenedores */
@@ -225,7 +230,7 @@
   --cc-warning-bg: #3a2f16;
 
   /* Categorías en modo oscuro */
-  --cc-cat-adulto: var(--cc-brand-300);
+  --cc-cat-adulto: var(--cc-brand-400);
   --cc-cat-adulto-bg: var(--cc-brand-100);
   --cc-cat-juvenil: #5eead4;
   --cc-cat-juvenil-bg: #14322f;
@@ -248,6 +253,12 @@
   --cc-brand-soft-border: var(--cc-brand-200);
   --cc-brand-on-soft: #7ba5e8;
 
+  --cc-hover: rgba(255, 255, 255, 0.06);
+
+  /* El header es del mismo navy en ambos temas: el texto sobre la marca
+     permanece blanco en oscuro. Se re-afirma por claridad/semántica. */
+  --cc-primary-contrast: #ffffff;
+
   --sys-on-primary-container: var(--cc-brand-300);
   --sys-on-secondary-container: var(--cc-brand-300);
   --sys-on-tertiary-container: var(--cc-gold-100);
@@ -268,6 +279,101 @@
   --sys-on-tertiary-fixed: var(--cc-gold-500);
   --sys-tertiary-fixed-dim: var(--cc-gold-100);
   --sys-on-tertiary-fixed-variant: var(--cc-gold-500);
+
+  /* ═══ Tokens M3 REALES de Material (--mat-sys-*) en modo oscuro ═══
+     El prebuilt theme (azure-blue) define --mat-sys-* una sola vez en claro
+     sobre <html>; los componentes de Material leen esos tokens (no --sys-*).
+     Redefiniéndolos acá, formularios, botones, select, snackbar, dialog y
+     progreso pasan al esquema oscuro con la paleta de marca.              */
+  --mat-sys-primary: var(--cc-primary);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: var(--cc-brand-100);
+  --mat-sys-on-primary-container: var(--cc-brand-400);
+
+  --mat-sys-secondary: var(--cc-brand-600);
+  --mat-sys-on-secondary: #ffffff;
+  --mat-sys-secondary-container: var(--cc-brand-100);
+  --mat-sys-on-secondary-container: var(--cc-brand-400);
+
+  --mat-sys-tertiary: var(--cc-accent);
+  --mat-sys-on-tertiary: #4a3600;
+  --mat-sys-tertiary-container: var(--cc-gold-100);
+  --mat-sys-on-tertiary-container: var(--cc-warning);
+
+  --mat-sys-error: var(--cc-error);
+  --mat-sys-on-error: #ffffff;
+  --mat-sys-error-container: var(--cc-error-bg);
+  --mat-sys-on-error-container: #ffb4ab;
+
+  --mat-sys-background: var(--cc-bg);
+  --mat-sys-on-background: var(--cc-text);
+  --mat-sys-surface: var(--cc-surface);
+  --mat-sys-on-surface: var(--cc-text);
+  --mat-sys-surface-dim: var(--cc-neutral-100);
+  --mat-sys-surface-bright: var(--cc-neutral-0);
+  --mat-sys-surface-variant: var(--cc-surface-muted);
+  --mat-sys-on-surface-variant: var(--cc-text-secondary);
+
+  --mat-sys-surface-container-lowest: var(--cc-neutral-0);
+  --mat-sys-surface-container-low: var(--cc-neutral-50);
+  --mat-sys-surface-container: var(--cc-neutral-100);
+  --mat-sys-surface-container-high: var(--cc-neutral-100);
+  --mat-sys-surface-container-highest: var(--cc-neutral-200);
+
+  --mat-sys-outline: var(--cc-neutral-500);
+  --mat-sys-outline-variant: var(--cc-neutral-400);
+  --mat-sys-shadow: #000000;
+  --mat-sys-scrim: #000000;
+
+  --mat-sys-inverse-surface: var(--cc-neutral-900);
+  --mat-sys-inverse-on-surface: var(--cc-neutral-0);
+  --mat-sys-inverse-primary: var(--cc-brand-300);
+
+  --mat-sys-primary-fixed: var(--cc-brand-100);
+  --mat-sys-on-primary-fixed: var(--cc-brand-400);
+  --mat-sys-primary-fixed-dim: var(--cc-brand-200);
+  --mat-sys-on-primary-fixed-variant: var(--cc-brand-400);
+  --mat-sys-secondary-fixed: var(--cc-brand-100);
+  --mat-sys-on-secondary-fixed: var(--cc-brand-400);
+  --mat-sys-secondary-fixed-dim: var(--cc-brand-200);
+  --mat-sys-on-secondary-fixed-variant: var(--cc-brand-400);
+  --mat-sys-tertiary-fixed: var(--cc-gold-100);
+  --mat-sys-on-tertiary-fixed: var(--cc-gold-500);
+  --mat-sys-tertiary-fixed-dim: var(--cc-gold-100);
+  --mat-sys-on-tertiary-fixed-variant: var(--cc-gold-500);
+
+  /* El primary (navy) se conserva para botones rellenos (marca).
+     En botones de solo texto/contorno y en la flecha del select en foco,
+     el navy sobre fondo oscuro no se aprecia: se usa un azul más claro. */
+  .mat-mdc-button:not(:disabled),
+  .mat-mdc-outlined-button:not(:disabled) {
+    --mat-sys-primary: var(--cc-brand-400);
+  }
+
+  .mat-mdc-select {
+    --mat-select-focused-arrow-color: var(--cc-brand-400);
+  }
+}
+
+/* ═══ Tipografía de los controles Material → Inter ═══
+   El prebuilt theme fuerza Roboto en labels, botones y selects. Al re-mapear
+   los tokens *-font a la fuente del app, todo el UI queda en una sola voz. */
+:root {
+  --mat-sys-body-large-font: var(--cc-font-body);
+  --mat-sys-body-medium-font: var(--cc-font-body);
+  --mat-sys-body-small-font: var(--cc-font-body);
+  --mat-sys-display-large-font: var(--cc-font-body);
+  --mat-sys-display-medium-font: var(--cc-font-body);
+  --mat-sys-display-small-font: var(--cc-font-body);
+  --mat-sys-headline-large-font: var(--cc-font-body);
+  --mat-sys-headline-medium-font: var(--cc-font-body);
+  --mat-sys-headline-small-font: var(--cc-font-body);
+  --mat-sys-label-large-font: var(--cc-font-body);
+  --mat-sys-label-medium-font: var(--cc-font-body);
+  --mat-sys-label-small-font: var(--cc-font-body);
+  --mat-sys-title-large-font: var(--cc-font-body);
+  --mat-sys-title-medium-font: var(--cc-font-body);
+  --mat-sys-title-small-font: var(--cc-font-body);
 }
 
 /* ═══ Base ═══ */
