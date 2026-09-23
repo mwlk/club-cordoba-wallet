@@ -1,4 +1,4 @@
-using ClubCordobaWallet.Application.Credentials.Commands.CreateCredential;
+using ClubCordobaWallet.Application.Features.Credentials.Commands.CreateCredential;
 using ClubCordobaWallet.Application.Interfaces;
 using ClubCordobaWallet.Domain.Entities;
 using ClubCordobaWallet.Domain.Enums;
@@ -25,6 +25,9 @@ public class CreateCredentialCommandHandlerTests
         public FakeMemberRepository(Member? existing = null) => _existing = existing;
 
         public Task<Member?> GetByDniAsync(string dni, CancellationToken ct) => Task.FromResult(_existing);
+
+        public Task<List<Member>> SearchByDniPrefixAsync(string dniPrefix, int take, CancellationToken ct) =>
+            Task.FromResult(new List<Member>());
 
         public Task AddAsync(Member member, CancellationToken ct)
         {
