@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/ClubCordobaWallet.Api/ClubCordobaWallet.Api.csproj" />
+  <Project Path="src/ClubCordobaWallet.Application/ClubCordobaWallet.Application.csproj" />
+  <Project Path="src/ClubCordobaWallet.Domain/ClubCordobaWallet.Domain.csproj" />
+  <Project Path="src/ClubCordobaWallet.Infrastructure/ClubCordobaWallet.Infrastructure.csproj" />
+  <Project Path="tests/ClubCordobaWallet.Tests.Integration/ClubCordobaWallet.Tests.Integration.csproj" />
+  <Project Path="tests/ClubCordobaWallet.Tests.Unit/ClubCordobaWallet.Tests.Unit.csproj" />
+</Solution>
