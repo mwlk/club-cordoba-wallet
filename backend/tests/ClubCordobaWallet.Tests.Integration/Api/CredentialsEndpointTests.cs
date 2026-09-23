@@ -83,4 +83,65 @@ public class CredentialsEndpointTests : IAsyncLifetime
         body.GetProperty("success").GetBoolean().Should().BeTrue();
         body.GetProperty("data").GetArrayLength().Should().Be(0);
     }
+
+    [Fact]
+    public async Task GetActiveCredential_Returns_Null_When_Member_Or_Active_Credential_Does_Not_Exist()
+    {
+        var response = await _client.GetAsync("/api/credentials/members/active-credential?dni=99999999");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+        body.GetProperty("success").GetBoolean().Should().BeTrue();
+        body.GetProperty("data").ValueKind.Should().Be(System.Text.Json.JsonValueKind.Null);
+    }
+
+    // renovacion-credencial-activa: flujo completo — alta -> GET active-credential
+    // la encuentra -> segunda alta sin confirmar falla sin persistir -> segunda
+    // alta confirmada renueva (vieja deja de contar como activa).
+    [Fact]
+    public async Task Renewal_Flow_Requires_Confirmation_And_Expires_Old_Credential()
+    {
+        const string dni = "38222333";
+        var createBody = new
+        {
+            nombre = "Marta",
+            apellido = "Sosa",
+            dni,
+            categoria = "adulto",
+            foto = "https://cdn.futbol.com.ar/socios/test2.jpg"
+        };
+
+        var firstCreate = await _client.PostAsJsonAsync("/api/credentials", createBody);
+        firstCreate.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var activeAfterFirst = await _client.GetAsync($"/api/credentials/members/active-credential?dni={dni}");
+        var activeAfterFirstBody = await activeAfterFirst.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+        activeAfterFirstBody.GetProperty("data").ValueKind.Should().Be(System.Text.Json.JsonValueKind.Object);
+
+        var secondCreateNoConfirm = await _client.PostAsJsonAsync("/api/credentials", createBody);
+        secondCreateNoConfirm.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        var failBody = await secondCreateNoConfirm.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+        failBody.GetProperty("success").GetBoolean().Should().BeFalse();
+
+        var listAfterFailedAttempt = await _client.GetAsync("/api/credentials");
+        var listAfterFailedAttemptBody = await listAfterFailedAttempt.Content.ReadFromJsonAsync<List<System.Text.Json.JsonElement>>();
+        listAfterFailedAttemptBody.Should().HaveCount(1);
+
+        var confirmedCreateBody = new
+        {
+            nombre = "Marta",
+            apellido = "Sosa",
+            dni,
+            categoria = "adulto",
+            foto = "https://cdn.futbol.com.ar/socios/test2.jpg",
+            confirmarRenovacion = true
+        };
+
+        var secondCreateConfirmed = await _client.PostAsJsonAsync("/api/credentials", confirmedCreateBody);
+        secondCreateConfirmed.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var listAfterRenewal = await _client.GetAsync("/api/credentials");
+        var listAfterRenewalBody = await listAfterRenewal.Content.ReadFromJsonAsync<List<System.Text.Json.JsonElement>>();
+        listAfterRenewalBody.Should().HaveCount(2);
+    }
 }
