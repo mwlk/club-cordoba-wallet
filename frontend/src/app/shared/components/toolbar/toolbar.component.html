@@ -1,4 +1,19 @@
-<mat-toolbar color="primary">
-  <mat-icon>badge</mat-icon>
-  <span style="margin-left: 8px; font-weight: 500;">Club Córdoba Wallet</span>
+<mat-toolbar color="primary" class="cc-toolbar">
+  <div class="cc-toolbar__brand">
+    <span class="cc-toolbar__crest">
+      <img src="assets/crest.svg" alt="Escudo del Club de Fútbol Córdoba">
+    </span>
+    <div class="cc-toolbar__text">
+      <span class="cc-toolbar__title">Club de Fútbol Córdoba</span>
+      <span class="cc-toolbar__subtitle">Credenciales de socios</span>
+    </div>
+  </div>
+  <button
+    mat-icon-button
+    class="cc-toolbar__theme"
+    (click)="toggleTheme()"
+    [attr.aria-label]="(isDark$ | async) ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'"
+  >
+    <mat-icon>{{ (isDark$ | async) ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
 </mat-toolbar>

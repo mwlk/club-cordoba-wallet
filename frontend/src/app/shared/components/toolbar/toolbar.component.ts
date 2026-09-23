@@ -1,7 +1,21 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-toolbar',
-  templateUrl: './toolbar.component.html'
+  standalone: false,
+  templateUrl: './toolbar.component.html',
+  styleUrl: './toolbar.component.scss'
 })
-export class ToolbarComponent {}
+export class ToolbarComponent {
+  readonly isDark$: Observable<boolean>;
+
+  constructor(private readonly theme: ThemeService) {
+    this.isDark$ = this.theme.isDark$;
+  }
+
+  toggleTheme(): void {
+    this.theme.toggle();
+  }
+}

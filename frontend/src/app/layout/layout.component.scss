@@ -1,0 +1,19 @@
+/* Shell del layout: header arriba, main al medio (crece), footer al fondo.
+   El host <app-layout> debe ocupar todo el alto del viewport. */
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
