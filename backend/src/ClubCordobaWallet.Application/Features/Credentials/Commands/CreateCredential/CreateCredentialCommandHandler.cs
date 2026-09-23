@@ -1,7 +1,7 @@
-using ClubCordobaWallet.Application.Credentials.Dtos;
+using ClubCordobaWallet.Application.Features.Credentials.Dtos;
 using ClubCordobaWallet.Domain.Exceptions;
 
-namespace ClubCordobaWallet.Application.Credentials.Commands.CreateCredential;
+namespace ClubCordobaWallet.Application.Features.Credentials.Commands.CreateCredential;
 
 public class CreateCredentialCommandHandler(
     IMemberRepository memberRepository,

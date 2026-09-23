@@ -1,7 +1,7 @@
 using System.Text.Json;
-using ClubCordobaWallet.Application.Credentials.Dtos;
+using ClubCordobaWallet.Application.Features.Credentials.Dtos;
 
-namespace ClubCordobaWallet.Application.Credentials.Queries.GetCredentialById;
+namespace ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentialById;
 
 public class GetCredentialByIdQueryHandler(ICredentialRepository credentialRepository)
     : IQueryHandler<GetCredentialByIdQuery, Result<CredentialDetailDto>>

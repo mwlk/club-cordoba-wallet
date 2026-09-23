@@ -1,4 +1,4 @@
-namespace ClubCordobaWallet.Application.Credentials.Dtos;
+namespace ClubCordobaWallet.Application.Features.Credentials.Dtos;
 
 // Detalle para GET /credentials/{id}: se muestra como "carnet" en el
 // frontend. Incluye los campos técnicos del protocolo por separado

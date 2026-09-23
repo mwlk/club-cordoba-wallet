@@ -1,4 +1,4 @@
-namespace ClubCordobaWallet.Application.Credentials.Dtos;
+namespace ClubCordobaWallet.Application.Features.Credentials.Dtos;
 
 // DTO mínimo para el listado (UC02): "foto, nombre, apellido, categoría,
 // número de socio, vigencia y estado". Nunca se devuelve la VC completa acá.

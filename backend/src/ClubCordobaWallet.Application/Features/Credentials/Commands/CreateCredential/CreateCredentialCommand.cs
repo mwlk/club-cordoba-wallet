@@ -1,4 +1,4 @@
-namespace ClubCordobaWallet.Application.Credentials.Commands.CreateCredential;
+namespace ClubCordobaWallet.Application.Features.Credentials.Commands.CreateCredential;
 
 // Los 5 campos del formulario de alta, tal cual la sección 4.1.3 del
 // enunciado. Sin memberId: el buscador de socio en el frontend es solo

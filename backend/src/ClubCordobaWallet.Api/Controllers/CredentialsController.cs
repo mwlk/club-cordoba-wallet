@@ -1,8 +1,8 @@
-using ClubCordobaWallet.Application.Credentials.Commands.CreateCredential;
-using ClubCordobaWallet.Application.Credentials.Dtos;
-using ClubCordobaWallet.Application.Credentials.Queries.GetCredentialById;
-using ClubCordobaWallet.Application.Credentials.Queries.GetCredentials;
-using ClubCordobaWallet.Application.Credentials.Queries.SearchMemberByDni;
+using ClubCordobaWallet.Application.Features.Credentials.Commands.CreateCredential;
+using ClubCordobaWallet.Application.Features.Credentials.Dtos;
+using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentialById;
+using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentials;
+using ClubCordobaWallet.Application.Features.Credentials.Queries.SearchMemberByDni;
 using System.Resources;
 using ClubCordobaWallet.Domain.Enums;
 

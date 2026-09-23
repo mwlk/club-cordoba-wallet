@@ -1,7 +1,7 @@
 using System.Text.Json;
-using ClubCordobaWallet.Application.Credentials.Dtos;
+using ClubCordobaWallet.Application.Features.Credentials.Dtos;
 
-namespace ClubCordobaWallet.Application.Credentials.Queries.GetCredentials;
+namespace ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentials;
 
 // UC02: si no hay credenciales, se devuelve lista vacía -> el frontend
 // resuelve el estado vacío (extensión 2a del enunciado).
