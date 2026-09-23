@@ -621,8 +621,8 @@ router-outlet {
 
 .cc-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
-  gap: var(--cc-space-3);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 285px), 1fr));
+  gap: var(--cc-space-4);
   align-items: stretch;
 }
 
