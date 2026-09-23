@@ -1,8 +1,8 @@
-using ClubCordobaWallet.Application.Credentials.Commands.CreateCredential;
-using ClubCordobaWallet.Application.Credentials.Dtos;
-using ClubCordobaWallet.Application.Credentials.Queries.GetCredentialById;
-using ClubCordobaWallet.Application.Credentials.Queries.GetCredentials;
-using ClubCordobaWallet.Application.Credentials.Queries.SearchMemberByDni;
+using ClubCordobaWallet.Application.Features.Credentials.Commands.CreateCredential;
+using ClubCordobaWallet.Application.Features.Credentials.Dtos;
+using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentialById;
+using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentials;
+using ClubCordobaWallet.Application.Features.Credentials.Queries.SearchMemberByDni;
 using System.Resources;
 using ClubCordobaWallet.Domain.Enums;
 
@@ -17,14 +17,16 @@ namespace ClubCordobaWallet.Api.Controllers;
 [Route("api/credentials")]
 public class CredentialsController(
     ICommandHandler<CreateCredentialCommand, Result<CreateCredentialResult>> createHandler,
-    IQueryHandler<SearchMemberByDniQuery, Result<MemberSearchDto>> searchHandler,
+    IQueryHandler<SearchMemberByDniQuery, Result<List<MemberSearchDto>>> searchHandler,
     IQueryHandler<GetCredentialsQuery, List<CredentialListDto>> listHandler,
     IQueryHandler<GetCredentialByIdQuery, Result<CredentialDetailDto>> detailHandler
 ) : ControllerBase
 {
-    // GET /api/credentials/members/search?dni=30123456
-    // Autocompletado de UX para el form de alta. Siempre responde 200:
-    // "no encontrado" es un resultado válido (socio nuevo), no un error.
+    // GET /api/credentials/members/search?dni=301 (prefijo, no exacto)
+    // Autocompletado de UX para el form de alta: devuelve hasta 10 socios
+    // cuyo DNI empieza con el prefijo dado. Siempre responde 200 con una
+    // lista (posiblemente vacía) -> "sin coincidencias" es un resultado
+    // válido (socio nuevo), no un error.
     [HttpGet("members/search")]
     public async Task<IActionResult> SearchMember([FromQuery] string dni, CancellationToken ct)
     {

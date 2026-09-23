@@ -12,7 +12,7 @@ namespace ClubCordobaWallet.Tests.Integration.Api;
 public class CredentialsEndpointTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _db = new PostgreSqlBuilder()
-        .WithImage("postgres:17-alpine")
+        .WithImage("postgres:18-alpine")
         .Build();
 
     private WebApplicationFactory<Program> _factory = default!;
@@ -72,12 +72,16 @@ public class CredentialsEndpointTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Search_Member_Not_Found_Returns_200_With_Success_False()
+    public async Task Search_Member_Not_Found_Returns_200_With_Empty_List()
     {
+        // mejora-busqueda-socio: la búsqueda es por prefijo y siempre
+        // responde Result.Ok — "sin coincidencias" es un array vacío, no
+        // un success:false (eso queda para errores reales).
         var response = await _client.GetAsync("/api/credentials/members/search?dni=99999999");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
-        body.GetProperty("success").GetBoolean().Should().BeFalse();
+        body.GetProperty("success").GetBoolean().Should().BeTrue();
+        body.GetProperty("data").GetArrayLength().Should().Be(0);
     }
 }

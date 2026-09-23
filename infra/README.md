@@ -6,7 +6,7 @@ Este proyecto no requiere un `init.sql` manual: el schema de PostgreSQL se gesti
 
 | Servicio | Imagen | Puerto host |
 |---|---|---|
-| `db` | `postgres:17-alpine` | 5432 |
+| `db` | `postgres:18-alpine` | 5432 |
 | `api` | build de `./backend` | 5000 |
 | `ui` | build de `./frontend` (nginx) | 4200 |
 

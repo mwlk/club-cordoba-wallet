@@ -12,6 +12,7 @@ Este documento registra las decisiones tomadas frente a puntos no especificados 
 | Result pattern | `Result<T>` con `MessageKey`/`ErrorKey` en vez de excepciones para casos esperados | Los mensajes se resuelven vía `.resx` (`Messages.resx` / `Errors.resx`), habilitando i18n futura sin tocar lógica de negocio. |
 | Errores no controlados | Middleware global (`ExceptionHandlingMiddleware`) | Los controllers no llevan try/catch; una única política de manejo de errores. |
 | Logging | Serilog, sink a consola | Structured logging, legible en `docker logs`. |
+| Documentación de API / UI interactiva | `Microsoft.AspNetCore.OpenApi` (generación del documento OpenAPI) + **Scalar** (`Scalar.AspNetCore`) para la UI interactiva, en vez de Swashbuckle/Swagger UI | Desde .NET 9, la plantilla oficial de ASP.NET Core Web API reemplazó Swashbuckle por `Microsoft.AspNetCore.OpenApi` como generador nativo del documento OpenAPI (sin UI propia). Microsoft recomienda Scalar como cliente de UI interactiva sobre ese documento (`app.MapScalarApiReference()`), en vez de agregar Swashbuckle solo para tener una UI. Se sigue esa recomendación por ser el camino oficial actual del framework, sin dependencias de terceros no mantenidas por Microsoft para la generación del documento. Solo habilitado en `Development` (mismo criterio que ya tenía `MapOpenApi()`). Disponible en `http://localhost:5000/scalar/v1`. |
 
 ## Alta de socio — no hay endpoint separado
 
@@ -22,6 +23,7 @@ Se decidió:
 - Internamente, el handler de `POST /credentials` busca un socio existente por DNI; si no existe, lo crea de forma transparente (nuevo DID + siguiente número de secuencia).
 - Si el mismo DNI ya tiene socio, se **reutiliza** su DID y `numeroSocio` — se permiten múltiples credenciales por socio (ej. renovaciones), sin invalidar las anteriores.
 - Se agregó un endpoint de búsqueda (`GET /credentials/members/search?dni=`) como mejora de UX para autocompletar el formulario — no rompe la restricción de controller único porque es una acción más del mismo controller, no una entidad de negocio nueva expuesta.
+- (`mejora-busqueda-socio`) La búsqueda es por **prefijo** de DNI (no exacto) y devuelve una **lista** de hasta 10 candidatos (`dni`, `firstName`, `lastName`, `memberNumber`), no un objeto único — el operador puede no recordar el DNI completo. El formulario reactivo (`debounceTime`+`switchMap`) muestra la lista y el usuario elige un candidato, que completa `dni`/`nombre`/`apellido` y deshabilita estos dos últimos. `GetByDniAsync` (exacto) se mantiene intacto para resolver/crear el socio en el `POST /credentials`.
 
 ## Modelo de datos
 
@@ -31,7 +33,7 @@ Se decidió:
 | Entidad `members` | Tabla separada de `credentials` | Necesaria para cumplir "se genera una vez y se persiste" sin recurrir a lookups sobre datos desnormalizados de `credentials`. |
 | `numeroSocio` | Secuencia de PostgreSQL (`member_number_seq`), formateada a 6 dígitos zero-padded | Persistente entre reinicios (requisito del enunciado), formato acorde al ejemplo (`"000123"`). |
 | Gaps en la secuencia | Aceptados | Las secuencias de PostgreSQL no son transaccionales; si el alta de socio se confirma pero luego falla la firma, ese número no se reutiliza. No hay requisito de continuidad estricta. |
-| Motor | PostgreSQL 17 | Soporte nativo de JSONB, gratuito, ampliamente usado en .NET vía Npgsql. |
+| Motor | PostgreSQL 18 | Soporte nativo de JSONB, gratuito, ampliamente usado en .NET vía Npgsql. |
 | Migrations | EF Core Migrations, aplicadas automáticamente al arrancar la API | El schema queda versionado junto al código; no requiere un `init.sql` separado. |
 
 ## Canonicalización y firma (sección 4.1.2)
@@ -43,7 +45,7 @@ Se decidió:
 | Formato de fecha | `yyyy-MM-ddTHH:mm:ssZ`, truncado a segundos | Un único `DateTime.UtcNow` truncado, reutilizado para `validFrom` y `proof.created` (deben coincidir, según el enunciado). |
 | `proofValue` | Base64 | El enunciado especifica textualmente "codificada en base64"; el ejemplo ilustrativo del documento parece hexadecimal, se prioriza el texto de la spec sobre el ejemplo. |
 | Clave HMAC | Variable de entorno / `dotnet user-secrets` en desarrollo, nunca hardcodeada | Requisito explícito del enunciado. La app falla al arrancar (`fail fast`) si la clave no está configurada. |
-| Falla de firma | No se persiste nada (ni `Member` si ya existía, ni `Credential`) | Requisito explícito (extensión 5a de UC01). |
+| Falla de firma | No se persiste nada (ni `Member` si ya existía, ni `Credential`) | Requisito explícito (extensión 5a de UC01). Implementado con `IUnitOfWork`: `MemberRepository`/`CredentialRepository` solo hacen `Add`, el commit único ocurre en el handler tras el éxito del Issuer. |
 
 ## Enums
 
@@ -60,6 +62,8 @@ Se decidió:
 | Foto | Campo requerido, sin fallback automático si se deja vacío | El enunciado define `foto` como "Input usuario" — el sistema no debe generar el dato por su cuenta. |
 | Arquitectura Angular | NgModules + lazy loading (no standalone components) | Decisión explícita del desarrollador para reforzar la separación de responsabilidades por feature. |
 | Comunicación HTTP | `ApiService` base, consumido por `CredentialsService` | Un solo punto de configuración de base URL e interceptors; los feature services no conocen `HttpClient` directamente. |
+| Detección de cambios tras HTTP (`cdr.detectChanges()` manual) | En `credential-list`, `credential-create`, `credential-detail` y `member-search`, cada `.subscribe()` a un método de `CredentialsService` termina con `this.cdr.detectChanges()` | Bug de entorno verificado en navegador real: `zone.js` queda cargado (`Zone` global existe) pero no parchea `XMLHttpRequest.prototype.send`/`fetch` en runtime (siguen siendo código nativo), y ni siquiera `NgZone.run()` logra entrar a la zona `"angular"` (`Zone.current.name` queda en `"<root>"`). Sin ese parche, Angular nunca se entera de que una petición HTTP terminó y la vista queda congelada (el estado del componente sí se actualiza, confirmado inspeccionando la instancia con `window.ng.getComponent(...)`) hasta el próximo evento DOM no relacionado (click, tecla) que sí dispara un tick — por eso el síntoma era "a veces funciona". Se comprobó con `window.ng.applyChanges(componente)` (equivalente a `ChangeDetectorRef.detectChanges()`) que forzar el CD del componente puntual sí funciona de forma confiable, mientras que `ApplicationRef.tick()`/`ngZone.run()` desde el `ApiService` centralizado no alcanzan. Por eso el fix quedó a nivel de componente y no en `ApiService`. Pendiente investigar la causa raíz exacta de por qué `zone.js` no parchea en este entorno (sospecha: caché de prebundling de Vite/dev-server desactualizada tras el bump de `typescript`) en una máquina limpia. |
+| (`toast-exito-http`) Toast de éxito genérico en interceptor | Nuevo `success.interceptor.ts`, simétrico a `error.interceptor.ts`: cualquier `POST`/`PUT`/`DELETE` con 2xx y `{success:true, message}` dispara un snackbar con ese `message` real del backend | Antes sólo había feedback de error (interceptor) y de éxito ad-hoc (snackbar manual en `credential-create.component.ts#backToList()`). Centralizarlo evita repetirlo por feature y reutiliza el mensaje ya resuelto vía el `Result` pattern, sin inventar un texto genérico. Se excluye `GET` (listar/consultar no amerita toast) y cualquier 2xx con `success:false`. |
 
 ## Testing
 

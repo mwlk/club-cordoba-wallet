@@ -1,6 +1,6 @@
 # Backend — Club Córdoba Wallet API
 
-.NET 10 · PostgreSQL 17 · Clean layered (Domain / Application / Infrastructure / Api) · CQRS manual
+.NET 10 · PostgreSQL 18 · Clean layered (Domain / Application / Infrastructure / Api) · CQRS manual
 
 ## Primer paso obligatorio — generar la migration inicial
 
@@ -78,5 +78,11 @@ tests/
 | GET | `/api/credentials` | Listado de credenciales (DTO mínimo) |
 | GET | `/api/credentials/{id}` | Detalle de una credencial |
 | POST | `/api/credentials` | Alta de credencial (`{ nombre, apellido, dni, categoria, foto }`) |
+
+## Documentación interactiva de la API (solo Development)
+
+`http://localhost:5000/scalar/v1` — UI interactiva Scalar sobre el documento
+OpenAPI generado por `Microsoft.AspNetCore.OpenApi`, reemplazo de Swagger UI
+(ver `docs/decisiones.md`, sección Arquitectura).
 
 Ver [docs/arquitectura.md](../docs/arquitectura.md) y [docs/decisiones.md](../docs/decisiones.md) para el detalle de diseño.
