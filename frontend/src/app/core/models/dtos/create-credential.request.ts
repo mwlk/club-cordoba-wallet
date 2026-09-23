@@ -6,4 +6,5 @@ export interface CreateCredentialRequest {
   dni: string;
   categoria: MemberCategory;
   foto: string;
+  confirmarRenovacion?: boolean;
 }
