@@ -11,8 +11,7 @@ namespace ClubCordobaWallet.Tests.Integration.Api;
 // cada corrida de tests, sin depender del compose de desarrollo.
 public class CredentialsEndpointTests : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _db = new PostgreSqlBuilder()
-        .WithImage("postgres:18-alpine")
+    private readonly PostgreSqlContainer _db = new PostgreSqlBuilder("postgres:18-alpine")
         .Build();
 
     private WebApplicationFactory<Program> _factory = default!;

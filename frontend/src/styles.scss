@@ -348,6 +348,14 @@ h1, h2, .cc-page-title, .cc-toolbar__title, .credential-card__title,
   --mdc-outlined-text-field-hover-label-text-color: var(--cc-text-secondary);
   --mdc-outlined-text-field-caret-color: var(--cc-primary);
   --mat-form-field-hover-state-layer-opacity: 0;
+  /* Sin esto, Material calcula el color disabled como
+     color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent) — y
+     --mat-sys-on-surface nunca lo redefinimos (usamos --sys-on-surface,
+     sin el prefijo "mat-"), así que queda fijo en el valor claro del
+     prebuilt theme: invisible sobre fondo oscuro. */
+  --mat-form-field-outlined-disabled-input-text-color: var(--cc-text-disabled);
+  --mat-form-field-outlined-disabled-label-text-color: var(--cc-text-disabled);
+  --mat-form-field-outlined-disabled-outline-color: var(--cc-border);
 }
 
 /* ═══ Chip de categoría (color propio por categoría) ═══ */
