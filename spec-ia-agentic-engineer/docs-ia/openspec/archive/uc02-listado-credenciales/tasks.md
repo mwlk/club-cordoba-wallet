@@ -19,22 +19,22 @@
 
 ## 3. Validacion
 
-- [ ] 3.1 Confirmar que `dotnet test tests/ClubCordobaWallet.Tests.Unit` y `dotnet test tests/ClubCordobaWallet.Tests.Integration` siguen en verde (sin cambios esperados, corren igual que antes).
-- [ ] 3.2 Confirmar puntualmente que `CredentialsEndpointTests.Get_Credentials_When_Empty_Returns_Empty_List` pasa (ya existe, solo se re-ejecuta como evidencia).
-- [ ] 3.3 Verificación manual: apagar el backend, abrir `/credentials` y `/credentials/{id-inexistente}` y confirmar que ninguna pantalla queda en blanco indefinidamente.
-- [ ] 3.4 Registrar evidencia en `reports/`.
-- [ ] 3.5 Ejecutar `/sdd-review` y resolver gaps que cambien el contrato final.
+- [x] 3.1 `dotnet test tests/ClubCordobaWallet.Tests.Unit` → 15/15 pass. `dotnet test tests/ClubCordobaWallet.Tests.Integration` → 3/3 pass.
+- [x] 3.2 `CredentialsEndpointTests.Get_Credentials_When_Empty_Returns_Empty_List` confirmado en verde dentro del run de integración.
+- [x] 3.3 Verificación manual en docker-compose: backend apagado, `/credentials` y `/credentials/{id-inexistente}` no quedan en blanco (estado vacío y "no encontrada" respectivamente). Repetido con backend arriba (404 real) sin regresión.
+- [x] 3.4 Evidencia registrada en `reports/verificacion-2026-09-23.md`.
+- [x] 3.5 `/sdd-review` ejecutado — PASS. Único gap: `design.md` desactualizado (describía `subscribe(next,error)`, real es `catchError` en pipe) — corregido.
 
 ## 4. Documentacion Confluence / Notion
 
-- [ ] 4.1 Completar `documentation.md` con las 6 secciones de `spec-ia-agentic-engineer/docs-ia/openspec/_templates/documentation.md`.
-- [ ] 4.2 Documentar problema, funcionamiento, cambios, pruebas, impacto, riesgos, rollback y mantenimiento.
-- [ ] 4.3 Confirmar explícitamente: sin cambios de esquema ni scripts de BD.
-- [ ] 4.4 Confirmar evidencia en `reports/` o marcar pendientes de prueba.
-- [ ] 4.5 Validar que `documentation.md` está listo para copiar a Confluence/Notion.
+- [x] 4.1 `documentation.md` completo, 6 secciones.
+- [x] 4.2 Problema, funcionamiento, cambios, pruebas, impacto, riesgos, rollback y mantenimiento documentados.
+- [x] 4.3 Confirmado: sin cambios de esquema ni scripts de BD.
+- [x] 4.4 Evidencia en `reports/verificacion-2026-09-23.md`.
+- [x] 4.5 `documentation.md` en Markdown plano, sin HTML, listo para copiar a Confluence/Notion.
 
 ## 5. Archive
 
-- [ ] 5.1 Confirmar que validación y documentación están cerradas antes de archivar.
-- [ ] 5.2 Integrar `specs/listado-credenciales/spec.md` como spec estable en `spec-ia-agentic-engineer/docs-ia/openspec/specs/listado-credenciales/spec.md`.
-- [ ] 5.3 Mover el change completo a `spec-ia-agentic-engineer/docs-ia/openspec/archive/uc02-listado-credenciales/`.
+- [x] 5.1 Validación (sección 3) y documentación (sección 4) cerradas antes de archivar.
+- [x] 5.2 Spec estable integrada en `spec-ia-agentic-engineer/docs-ia/openspec/specs/listado-credenciales/spec.md`.
+- [x] 5.3 Change movido a `spec-ia-agentic-engineer/docs-ia/openspec/archive/uc02-listado-credenciales/`. Archivado con `/sdd-archive`.
