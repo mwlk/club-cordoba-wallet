@@ -51,6 +51,9 @@ if (app.Environment.IsDevelopment())
     // Swagger UI (ver docs/decisiones.md).
     app.MapOpenApi();
     app.MapScalarApiReference();
+    // Raíz -> Scalar para que al levantar en dev caigas directo en la doc.
+    // Redirect relativo: hereda http/https del request (no hay TLS configurado).
+    app.MapGet("/", () => Results.Redirect("/scalar/v1"));
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
