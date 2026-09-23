@@ -38,11 +38,11 @@ cero, respeta y corrige lo ya generado siguiendo el enunciado (`../../../init.tx
 
 ## Comandos del proyecto
 
-- Instalar dependencias: `dotnet restore` (desde `backend/src/ClubCordobaWallet.Api`) · `npm install` (desde `frontend/`).
-- Ejecutar app: `dotnet run` (backend) · `npm start` (frontend) · `docker-compose up --build` (stack completo, requiere `.env`).
-- Ejecutar tests: `dotnet test tests/ClubCordobaWallet.Tests.Unit` · `dotnet test tests/ClubCordobaWallet.Tests.Integration` (Docker) · `npm test` (Karma/Jasmine).
+- Instalar dependencias: `dotnet restore` (desde `backend/src/ClubCordobaWallet.Api`) · `pnpm install` (desde `frontend/`, **no** `npm install` — el proyecto usa pnpm, `npm install` ignora `pnpm-lock.yaml`).
+- Ejecutar app: `dotnet run` (backend) · `pnpm start` (frontend) · `docker-compose up --build` (stack completo — **no requiere `.env`**, `docker-compose.yml` ya trae defaults dev-safe para todas las vars).
+- Ejecutar tests: `dotnet test tests/ClubCordobaWallet.Tests.Unit` · `dotnet test tests/ClubCordobaWallet.Tests.Integration` (Docker) · `pnpm test` (Karma/Jasmine).
 - Build / lint: `dotnet build` · `ng build`.
-- Migration inicial (obligatoria, no está generada): `dotnet ef migrations add Initial --project ../ClubCordobaWallet.Infrastructure --startup-project .` desde `backend/src/ClubCordobaWallet.Api`.
+- Migration inicial: **ya generada e incluida en el repo** (`backend/src/ClubCordobaWallet.Infrastructure/Migrations/`), se aplica sola al arrancar la API. Solo generar una nueva si se modifica el modelo de datos (ver `backend/README.md`).
 
 ## Checklist antes de modificar código
 

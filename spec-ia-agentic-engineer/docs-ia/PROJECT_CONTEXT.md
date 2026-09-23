@@ -61,7 +61,7 @@ club-cordoba-wallet/
 ## Puntos de entrada
 
 - Backend: `backend/src/ClubCordobaWallet.Api/Program.cs` → `dotnet run` (puerto 5000 en Docker, ver `appsettings.Development.json` para local).
-- Frontend: `npm start` en `frontend/` → `http://localhost:4200`.
+- Frontend: `pnpm start` en `frontend/` → `http://localhost:4200`.
 - Único controller HTTP: `CredentialsController` (`GET/POST /api/credentials`, `GET /api/credentials/{id}`, `GET /api/credentials/members/search?dni=`).
 
 ## Persistencia
@@ -69,7 +69,7 @@ club-cordoba-wallet/
 - `members` (uuid id, did único, member_number único secuencial zero-padded 6 dígitos, first_name, last_name, dni único, created_at).
 - `credentials` (uuid id, member_id FK, `vc_json` JSONB con la VC completa firmada, created_at).
 - Secuencia PostgreSQL `member_number_seq` para `numeroSocio` (persistente entre reinicios, gaps aceptados si el alta de socio se confirma pero la firma falla después).
-- Migrations EF Core, **no incluidas en el scaffold** — hay que generarlas (`dotnet ef migrations add Initial ...`, ver `backend/README.md`) antes del primer arranque.
+- Migrations EF Core, **ya generadas e incluidas en el repo** (`backend/src/ClubCordobaWallet.Infrastructure/Migrations/`), se aplican solas al arrancar la API. Solo generar una nueva si se modifica el modelo (ver `backend/README.md`).
 
 ## Integraciones externas
 
@@ -79,8 +79,8 @@ Ninguna real. El "Issuer" es un servicio in-process (no HTTP) dentro del mismo b
 
 - `Result<T>` (`Success`/`Data`/`MessageKey`/`ErrorKey`) para casos de negocio esperados (socio no encontrado, credencial no encontrada, falla de firma) — el controller resuelve el mensaje final vía `ResourceManager` sobre `Messages.resx`/`Errors.resx`.
 - Excepciones no controladas → `ExceptionHandlingMiddleware` (política única, controllers sin try/catch).
-- Regla de negocio crítica (UC01, extensión 5a): si falla la firma en el Issuer, **no debe persistirse nada** — ni el `Member` recién creado ni la `Credential`. **Gap detectado y pendiente de fix** (ver change `uc01-alta-credencial`): hoy `MemberRepository.AddAsync` llama `SaveChangesAsync` antes de invocar al Issuer, así que un `Member` nuevo queda persistido aunque la firma falle después. La corrección decidida es introducir un `IUnitOfWork` explícito (un único `SaveChangesAsync` después de que el Issuer confirma éxito) en vez de que cada repositorio commitee por su cuenta.
-- Frontend: `error.interceptor.ts` muestra snackbar global en errores HTTP. Gap detectado: `credential-create.component.ts#submit()` no tiene callback de error en el `subscribe`, así que `submitting` queda en `true` indefinidamente tras un error (aunque el snackbar sí se vea) — pendiente de fix en el mismo change.
+- Regla de negocio crítica (UC01, extensión 5a): si falla la firma en el Issuer, **no debe persistirse nada** — ni el `Member` recién creado ni la `Credential`. **Ya resuelto** (change `uc01-alta-credencial`, verificado en código): `MemberRepository`/`CredentialRepository` solo hacen `DbSet.Add`, sin `SaveChangesAsync` propio; `CreateCredentialCommandHandler` llama a `unitOfWork.SaveChangesAsync` una única vez, después de que `issuerService.Issue(...)` confirma éxito — si tira `IssuerSigningException`, el handler retorna sin haber commiteado nada.
+- Frontend: `error.interceptor.ts` muestra snackbar global en errores HTTP. **Ya resuelto**: `credential-create.component.ts#submit()` tiene callback `error:` en el `subscribe` que pone `submitting = false`, ya no queda colgado tras un error.
 
 ## Convenciones de tests
 
@@ -91,9 +91,9 @@ Ninguna real. El "Issuer" es un servicio in-process (no HTTP) dentro del mismo b
 ## Comandos útiles
 
 - Backend: `dotnet restore` / `dotnet run` (desde `backend/src/ClubCordobaWallet.Api`) / `dotnet test tests/ClubCordobaWallet.Tests.Unit` / `dotnet test tests/ClubCordobaWallet.Tests.Integration` (requiere Docker).
-- Frontend: `npm install` / `npm start` / `npm test` (Karma/Jasmine).
-- Todo el stack: `docker-compose up --build` desde la raíz (requiere `.env` con `HMAC_SECRET_KEY`).
-- Migration inicial (obligatoria antes del primer `docker-compose up` o `dotnet run`): ver `backend/README.md#primer-paso-obligatorio`.
+- Frontend: `pnpm install` / `pnpm start` / `pnpm test` (Karma/Jasmine) — **no** `npm`, el proyecto usa pnpm (`pnpm-lock.yaml`, `packageManager` en `package.json`).
+- Todo el stack: `docker-compose up --build` desde la raíz — **no requiere `.env`**, ya trae defaults dev-safe (`DB_PASSWORD`, `HMAC_SECRET_KEY`, `CORS_ALLOWED_ORIGINS`); `.env` es solo para pisar esos valores.
+- Migration inicial: ya está generada e incluida en el repo, se aplica sola al arrancar la API tanto en Docker como con `dotnet run`. Ver `backend/README.md`.
 
 ## Reglas del proyecto
 
@@ -104,7 +104,7 @@ Ninguna real. El "Issuer" es un servicio in-process (no HTTP) dentro del mismo b
 - Cada caso de uso (UC01, UC02) se trabaja como su propio change/spec dentro de `spec-ia-agentic-engineer/docs-ia/openspec/changes/`.
 - Sin commits automáticos: el historial de commits del entregable (enunciado, sección 3) lo maneja el usuario manualmente.
 
-## Decisiones activas (a validar/ejecutar vía SDD, no asumidas de antemano)
+## Decisiones ya aplicadas (histórico, quedaron resueltas)
 
-- **Postgres 18** (subir desde `postgres:17-alpine` en `docker-compose.yml`, aunque el enunciado no exige "última versión" para el motor de datos) — decisión confirmada por el usuario, pendiente de aplicar en `docker-compose.yml` y en las menciones a "PostgreSQL 17" de `README.md`, `docs/arquitectura.md`, `docs/modelo-datos.md`, `backend/README.md`.
-- **Unit of Work** para UC01 — ver "Convenciones de errores" arriba.
+- **Postgres 18**: `docker-compose.yml` usa `postgres:18-alpine`, y `README.md` / `docs/arquitectura.md` / `docs/modelo-datos.md` / `backend/README.md` ya dicen "PostgreSQL 18" de forma consistente — verificado, no hay menciones a la 17 pendientes.
+- **Unit of Work** para UC01: implementado y verificado — ver "Convenciones de errores" arriba.
