@@ -7,7 +7,8 @@ public class CreateCredentialCommandHandler(
     IMemberRepository memberRepository,
     ICredentialRepository credentialRepository,
     ITenantService tenantService,
-    IIssuerService issuerService
+    IIssuerService issuerService,
+    IUnitOfWork unitOfWork
 ) : ICommandHandler<CreateCredentialCommand, Result<CreateCredentialResult>>
 {
     public async Task<Result<CreateCredentialResult>> Handle(CreateCredentialCommand command, CancellationToken ct)
@@ -15,6 +16,7 @@ public class CreateCredentialCommandHandler(
         // 1. Reutilizar socio existente por DNI, o crear uno nuevo.
         //    "se genera una vez y se persiste" (enunciado 4.1.2) -> el DID
         //    y el numeroSocio viven en Member, no se regeneran en cada alta.
+        //    AddAsync solo agrega al DbContext, sin commit (ver IUnitOfWork).
         var member = await memberRepository.GetByDniAsync(command.Dni, ct);
         if (member is null)
         {
@@ -27,7 +29,9 @@ public class CreateCredentialCommandHandler(
         var subject = tenantService.BuildSubject(member, command.Categoria, command.Foto);
 
         // 3. Invocar al Issuer. Si falla la firma, no se persiste nada
-        //    (requisito explícito del enunciado, extensión 5a de UC01).
+        //    (requisito explícito del enunciado, extensión 5a de UC01):
+        //    como todavía no se llamó unitOfWork.SaveChangesAsync, el Member
+        //    recién agregado (si aplica) nunca llega a la base.
         IssuedCredential issued;
         try
         {
@@ -38,9 +42,11 @@ public class CreateCredentialCommandHandler(
             return Result<CreateCredentialResult>.Fail("IssuerSigningFailed");
         }
 
-        // 4. Persistir la VC completa.
+        // 4. Persistir la VC completa. Commit único: Member (si es nuevo) +
+        //    Credential se guardan juntos, recién acá.
         var credential = Credential.Create(member.Id, issued.VcJson);
         await credentialRepository.AddAsync(credential, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return Result<CreateCredentialResult>.Ok(
             new CreateCredentialResult(member.MemberNumber, issued.ValidFrom, issued.ValidUntil),

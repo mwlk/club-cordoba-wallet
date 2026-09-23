@@ -66,10 +66,17 @@ export class CredentialCreateComponent implements CanComponentDeactivate {
       dni: raw.dni!,
       categoria: raw.categoria!,
       foto: raw.foto!
-    }).subscribe(response => {
-      this.submitting = false;
-      if (response.success && response.data) {
-        this.result = response.data;
+    }).subscribe({
+      next: response => {
+        this.submitting = false;
+        if (response.success && response.data) {
+          this.result = response.data;
+        }
+      },
+      error: () => {
+        // El snackbar global (error.interceptor.ts) ya muestra el mensaje;
+        // acá solo liberamos el formulario para reintentar.
+        this.submitting = false;
       }
     });
   }
