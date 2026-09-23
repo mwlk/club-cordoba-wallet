@@ -3,7 +3,9 @@ import { LoadingService } from './loading.service';
 
 @Component({
   selector: 'app-loading-spinner',
-  templateUrl: './loading-spinner.component.html'
+  standalone: false,
+  templateUrl: './loading-spinner.component.html',
+  styleUrl: './loading-spinner.component.scss'
 })
 export class LoadingSpinnerComponent {
   constructor(public loading: LoadingService) {}

@@ -1,6 +1,6 @@
 # Modelo de datos
 
-## Motor: PostgreSQL 17
+## Motor: PostgreSQL 18
 
 Elegido por soporte nativo de JSONB (para persistir la VC completa tal cual la firma el Issuer) y por ser gratuito/ampliamente soportado en .NET vía Npgsql.
 

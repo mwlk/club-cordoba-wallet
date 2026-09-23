@@ -4,10 +4,12 @@ namespace ClubCordobaWallet.Infrastructure.Repositories;
 
 public class CredentialRepository(AppDbContext db) : ICredentialRepository
 {
-    public async Task AddAsync(Credential credential, CancellationToken ct)
+    // Sin commit propio -> el commit único lo decide el CommandHandler vía
+    // IUnitOfWork, después de confirmar el éxito del Issuer.
+    public Task AddAsync(Credential credential, CancellationToken ct)
     {
         db.Credentials.Add(credential);
-        await db.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 
     public Task<Credential?> GetByIdAsync(Guid id, CancellationToken ct) =>

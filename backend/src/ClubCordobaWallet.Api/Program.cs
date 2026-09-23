@@ -2,6 +2,8 @@ using ClubCordobaWallet.Api.Middleware;
 using ClubCordobaWallet.Application;
 using ClubCordobaWallet.Infrastructure;
 using ClubCordobaWallet.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,7 +46,14 @@ using (var scope = app.Services.CreateScope())
 
 if (app.Environment.IsDevelopment())
 {
+    // Documento OpenAPI generado por Microsoft.AspNetCore.OpenApi (nativo del
+    // template desde .NET 9+) + Scalar como UI interactiva, reemplazo de
+    // Swagger UI (ver docs/decisiones.md).
     app.MapOpenApi();
+    app.MapScalarApiReference();
+    // Raíz -> Scalar para que al levantar en dev caigas directo en la doc.
+    // Redirect relativo: hereda http/https del request (no hay TLS configurado).
+    app.MapGet("/", () => Results.Redirect("/scalar/v1"));
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

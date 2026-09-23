@@ -19,6 +19,7 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { CredentialStatusPipe } from './pipes/credential-status.pipe';
+import { MemberCategoryPipe } from './pipes/member-category.pipe';
 
 const MATERIAL_MODULES = [
   MatButtonModule, MatCardModule, MatDialogModule, MatFormFieldModule,
@@ -33,13 +34,14 @@ const MATERIAL_MODULES = [
     ConfirmationDialogComponent,
     LoadingSpinnerComponent,
     ToolbarComponent,
-    CredentialStatusPipe
+    CredentialStatusPipe,
+    MemberCategoryPipe
   ],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ...MATERIAL_MODULES],
   exports: [
     CommonModule, FormsModule, ReactiveFormsModule, ...MATERIAL_MODULES,
     CredentialCardComponent, EmptyStateComponent, ConfirmationDialogComponent,
-    LoadingSpinnerComponent, ToolbarComponent, CredentialStatusPipe
+    LoadingSpinnerComponent, ToolbarComponent, CredentialStatusPipe, MemberCategoryPipe
   ]
 })
 export class SharedModule {}
