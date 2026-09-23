@@ -1,6 +1,6 @@
 # Backend — Club Córdoba Wallet API
 
-.NET 10 · PostgreSQL 17 · Clean layered (Domain / Application / Infrastructure / Api) · CQRS manual
+.NET 10 · PostgreSQL 18 · Clean layered (Domain / Application / Infrastructure / Api) · CQRS manual
 
 ## Primer paso obligatorio — generar la migration inicial
 

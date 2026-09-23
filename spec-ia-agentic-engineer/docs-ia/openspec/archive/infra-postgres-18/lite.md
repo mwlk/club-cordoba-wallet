@@ -18,6 +18,7 @@ del stack (.NET 10 / Angular 22, ambos ya en su última versión).
 - `docker-compose.yml`: `image: postgres:17-alpine` → `postgres:18-alpine`.
 - `backend/tests/ClubCordobaWallet.Tests.Integration/Api/CredentialsEndpointTests.cs`: `.WithImage("postgres:17-alpine")` → `"postgres:18-alpine"`.
 - Menciones textuales "PostgreSQL 17" → "PostgreSQL 18" en: `README.md` (diagrama Mermaid + bullet de stack), `backend/README.md` (encabezado), `infra/README.md` (tabla de servicios), `docs/modelo-datos.md` (encabezado "Motor"), `docs/arquitectura.md` (diagrama Mermaid), `docs/decisiones.md` (tabla de decisiones de arquitectura).
+- **No previsto en el diseño original**: `docker-compose.yml` volumen `pgdata:/var/lib/postgresql/data` → `pgdata:/var/lib/postgresql`. Desde Postgres 18, la imagen oficial cambió la convención de layout de datos (compatible con `pg_ctlcluster`, directorios por versión mayor) y **falla al arrancar** (`Error: ... there appears to be PostgreSQL data in: /var/lib/postgresql/data (unused mount/volume)`) si se monta el volumen en la ruta vieja. Ver detalle: https://github.com/docker-library/postgres/pull/1259.
 
 ## Que no cambia
 
