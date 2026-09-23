@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { AbstractControl, FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, startWith, switchMap, tap } from 'rxjs/operators';
 import { CredentialsService } from '../../../../core/services/credentials.service';
@@ -21,6 +21,10 @@ export class MemberSearchComponent {
   @Output() memberFound = new EventEmitter<MemberSearchResult>();
   @Output() memberNotFound = new EventEmitter<void>();
   @Output() dniChange = new EventEmitter<string>();
+
+  // Control del formulario padre que valida el DNI (requerido + 7-8 dígitos).
+  // El estado de error se pinta acá para que el campo no quede sin feedback.
+  @Input() errorControl: AbstractControl | null = null;
 
   readonly dniControl = new FormControl('', { nonNullable: true });
   candidates$: Observable<MemberSearchResult[]>;
