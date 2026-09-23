@@ -3,6 +3,7 @@ using ClubCordobaWallet.Application.Features.Credentials.Dtos;
 using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentialById;
 using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentials;
 using ClubCordobaWallet.Application.Features.Credentials.Queries.SearchMemberByDni;
+using ClubCordobaWallet.Application.Features.Credentials.Queries.GetActiveCredentialByDni;
 using System.Resources;
 using ClubCordobaWallet.Domain.Enums;
 
@@ -19,9 +20,21 @@ public class CredentialsController(
     ICommandHandler<CreateCredentialCommand, Result<CreateCredentialResult>> createHandler,
     IQueryHandler<SearchMemberByDniQuery, Result<List<MemberSearchDto>>> searchHandler,
     IQueryHandler<GetCredentialsQuery, List<CredentialListDto>> listHandler,
-    IQueryHandler<GetCredentialByIdQuery, Result<CredentialDetailDto>> detailHandler
+    IQueryHandler<GetCredentialByIdQuery, Result<CredentialDetailDto>> detailHandler,
+    IQueryHandler<GetActiveCredentialByDniQuery, Result<ActiveCredentialDto?>> activeCredentialHandler
 ) : ControllerBase
 {
+    // GET /api/credentials/members/active-credential?dni=301... (renovacion-credencial-activa)
+    // Consulta previa del frontend para mostrar el popup de confirmación
+    // con la fecha real antes de intentar el alta. Siempre 200, data:null
+    // si no hay socio o no tiene credencial vigente -> no es un error.
+    [HttpGet("members/active-credential")]
+    public async Task<IActionResult> GetActiveCredential([FromQuery] string dni, CancellationToken ct)
+    {
+        var result = await activeCredentialHandler.Handle(new GetActiveCredentialByDniQuery(dni), ct);
+        return Ok(ToResponse(result));
+    }
+
     // GET /api/credentials/members/search?dni=301 (prefijo, no exacto)
     // Autocompletado de UX para el form de alta: devuelve hasta 10 socios
     // cuyo DNI empieza con el prefijo dado. Siempre responde 200 con una
@@ -56,7 +69,7 @@ public class CredentialsController(
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCredentialRequest request, CancellationToken ct)
     {
-        var command = new CreateCredentialCommand(request.Nombre, request.Apellido, request.Dni, request.Categoria, request.Foto);
+        var command = new CreateCredentialCommand(request.Nombre, request.Apellido, request.Dni, request.Categoria, request.Foto, request.ConfirmarRenovacion);
         var result = await createHandler.Handle(command, ct);
         if (!result.Success) return BadRequest(ToResponse(result));
         return StatusCode(201, ToResponse(result));
@@ -80,4 +93,4 @@ public class CredentialsController(
     };
 }
 
-public record CreateCredentialRequest(string Nombre, string Apellido, string Dni, MemberCategory Categoria, string Foto);
+public record CreateCredentialRequest(string Nombre, string Apellido, string Dni, MemberCategory Categoria, string Foto, bool ConfirmarRenovacion = false);

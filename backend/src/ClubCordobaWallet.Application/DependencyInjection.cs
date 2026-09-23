@@ -2,6 +2,7 @@ using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentials;
 using ClubCordobaWallet.Application.Features.Credentials.Queries.SearchMemberByDni;
 using ClubCordobaWallet.Application.Features.Credentials.Commands.CreateCredential;
 using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentialById;
+using ClubCordobaWallet.Application.Features.Credentials.Queries.GetActiveCredentialByDni;
 using Microsoft.Extensions.DependencyInjection;
 using ClubCordobaWallet.Application.Features.Credentials.Dtos;
 
@@ -22,6 +23,9 @@ public static class DependencyInjection
 
         services.AddScoped<IQueryHandler<GetCredentialByIdQuery, Result<CredentialDetailDto>>,
             GetCredentialByIdQueryHandler>();
+
+        services.AddScoped<IQueryHandler<GetActiveCredentialByDniQuery, Result<ActiveCredentialDto?>>,
+            GetActiveCredentialByDniQueryHandler>();
 
         return services;
     }

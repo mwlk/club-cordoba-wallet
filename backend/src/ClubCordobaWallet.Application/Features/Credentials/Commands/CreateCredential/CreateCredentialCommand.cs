@@ -9,5 +9,6 @@ public record CreateCredentialCommand(
     string Apellido,
     string Dni,
     MemberCategory Categoria,
-    string Foto
+    string Foto,
+    bool ConfirmarRenovacion = false
 );
