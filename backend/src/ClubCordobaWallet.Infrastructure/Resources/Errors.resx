@@ -4,7 +4,6 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
-  <data name="MemberNotFound" xml:space="preserve"><value>No se encontró un socio con ese DNI</value></data>
   <data name="CredentialNotFound" xml:space="preserve"><value>No se encontró la credencial solicitada</value></data>
   <data name="IssuerSigningFailed" xml:space="preserve"><value>No se pudo firmar la credencial. Intente nuevamente.</value></data>
 </root>
