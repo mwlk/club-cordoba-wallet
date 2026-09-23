@@ -7,6 +7,7 @@ import { CredentialDetail } from '../../../core/models/credential.model';
 // HMAC) sin traducir: el admin del club no tiene por qué conocerlos.
 @Component({
   selector: 'app-credential-card',
+  standalone: false,
   templateUrl: './credential-card.component.html',
   styleUrl: './credential-card.component.scss'
 })

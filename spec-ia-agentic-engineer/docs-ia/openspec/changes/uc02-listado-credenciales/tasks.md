@@ -13,9 +13,9 @@
 
 ## 2. Implementacion
 
-- [ ] 2.1 En `credential-list.component.ts#ngOnInit`, agregar segundo argumento (`error`) al `subscribe` de `credentialsService.list()` que setee `this.loaded = true` sin modificar `credentials` (queda `[]`).
-- [ ] 2.2 En `credential-detail.component.ts#ngOnInit`, agregar segundo argumento (`error`) al `subscribe` de `credentialsService.getById(id)` que setee `this.notFound = true`.
-- [ ] 2.3 No tocar backend (`GetCredentialsQueryHandler`, `GetCredentialByIdQueryHandler`, `CredentialsController`) — ya cumplen el enunciado.
+- [x] 2.1 En `credential-list.component.ts#ngOnInit`, en vez de callback `error` separado (duplicaría `detectChanges()` en dos branches), se usa `pipe(catchError(() => of([])))` antes del `subscribe`: el stream resuelve a lista vacía y un único `next` cubre éxito y fallo. `loaded = true` siempre.
+- [x] 2.2 En `credential-detail.component.ts#ngOnInit`, mismo mecanismo: `pipe(catchError(() => of({success:false,message:'',data:null} as ApiResponse<CredentialDetail>)))`. El `else` existente (`notFound = true`) ya cubre tanto `success:false` real como el fallback de error — un solo código path.
+- [x] 2.3 No se tocó backend (`GetCredentialsQueryHandler`, `GetCredentialByIdQueryHandler`, `CredentialsController`) — ya cumplen el enunciado.
 
 ## 3. Validacion
 

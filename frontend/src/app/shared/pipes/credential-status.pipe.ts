@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { CredentialStatus } from '../../core/models/enums';
 
-@Pipe({ name: 'credentialStatus' })
+@Pipe({ name: 'credentialStatus', standalone: false })
 export class CredentialStatusPipe implements PipeTransform {
   private readonly labels: Record<number, string> = {
     [CredentialStatus.Active]: 'Activa',
