@@ -4,6 +4,7 @@ using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentialBy
 using ClubCordobaWallet.Application.Features.Credentials.Queries.GetCredentials;
 using ClubCordobaWallet.Application.Features.Credentials.Queries.SearchMemberByDni;
 using ClubCordobaWallet.Application.Features.Credentials.Queries.GetActiveCredentialByDni;
+using System.ComponentModel.DataAnnotations;
 using System.Resources;
 using ClubCordobaWallet.Domain.Enums;
 
@@ -29,6 +30,8 @@ public class CredentialsController(
     // con la fecha real antes de intentar el alta. Siempre 200, data:null
     // si no hay socio o no tiene credencial vigente -> no es un error.
     [HttpGet("members/active-credential")]
+    [EndpointSummary("Consulta si un socio tiene una credencial activa")]
+    [EndpointDescription("Busca por DNI exacto. Devuelve 200 con data:null si el socio no existe o no tiene ninguna credencial vigente — no es un error, se usa para mostrar (o no) el popup de confirmación de renovación antes del alta.")]
     public async Task<IActionResult> GetActiveCredential([FromQuery] string dni, CancellationToken ct)
     {
         var result = await activeCredentialHandler.Handle(new GetActiveCredentialByDniQuery(dni), ct);
@@ -41,6 +44,8 @@ public class CredentialsController(
     // lista (posiblemente vacía) -> "sin coincidencias" es un resultado
     // válido (socio nuevo), no un error.
     [HttpGet("members/search")]
+    [EndpointSummary("Busca socios por prefijo de DNI")]
+    [EndpointDescription("Devuelve hasta 10 candidatos cuyo DNI empieza con el prefijo dado (dni, nombre, apellido, número de socio). Siempre 200 con una lista, posiblemente vacía — usado para autocompletar el formulario de alta.")]
     public async Task<IActionResult> SearchMember([FromQuery] string dni, CancellationToken ct)
     {
         var result = await searchHandler.Handle(new SearchMemberByDniQuery(dni), ct);
@@ -49,6 +54,8 @@ public class CredentialsController(
 
     // GET /api/credentials
     [HttpGet]
+    [EndpointSummary("Lista las credenciales emitidas")]
+    [EndpointDescription("Devuelve el DTO mínimo de cada credencial (foto, nombre, apellido, categoría, número de socio, vigencia, estado) para el listado (UC02). Lista vacía si no hay ninguna emitida.")]
     public async Task<IActionResult> List(CancellationToken ct)
     {
         var list = await listHandler.Handle(new GetCredentialsQuery(), ct);
@@ -57,6 +64,8 @@ public class CredentialsController(
 
     // GET /api/credentials/{id}
     [HttpGet("{id:guid}")]
+    [EndpointSummary("Detalle de una credencial")]
+    [EndpointDescription("Devuelve la VC completa (incluyendo id, type, issuer y proof) para el detalle expandible del listado. 404 si el id no existe.")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
         var result = await detailHandler.Handle(new GetCredentialByIdQuery(id), ct);
@@ -67,6 +76,8 @@ public class CredentialsController(
     // POST /api/credentials
     // Body: { nombre, apellido, dni, categoria, foto } — tal cual 4.1.3.
     [HttpPost]
+    [EndpointSummary("Da de alta una credencial de socio (UC01)")]
+    [EndpointDescription("Arma el credentialSubject, invoca al Issuer (firma HMAC-SHA256) y persiste la VC completa. Si el socio (DNI) no existe, lo crea; si ya existe, reutiliza su DID y número de socio. Si falla la firma en el Issuer, no persiste nada (400).")]
     public async Task<IActionResult> Create([FromBody] CreateCredentialRequest request, CancellationToken ct)
     {
         var command = new CreateCredentialCommand(request.Nombre, request.Apellido, request.Dni, request.Categoria, request.Foto, request.ConfirmarRenovacion);
@@ -93,4 +104,28 @@ public class CredentialsController(
     };
 }
 
-public record CreateCredentialRequest(string Nombre, string Apellido, string Dni, MemberCategory Categoria, string Foto, bool ConfirmarRenovacion = false);
+// DataAnnotations: mismas reglas que ya valida el frontend (reactive forms
+// en credential-create.component.ts) — acá van como defensa en profundidad,
+// para que un caller que le pegue directo a la API (no solo el form Angular)
+// no pueda persistir strings vacíos, un DNI no numérico o una foto sin
+// formato de URL. [Required] con AllowEmptyStrings=false (default) también
+// cubre el caso de string vacío "", que el binding implícito de ASP.NET
+// Core deja pasar (solo rechaza la propiedad ausente del JSON).
+public record CreateCredentialRequest(
+    [Required(ErrorMessage = "El nombre es obligatorio.")]
+    string Nombre,
+
+    [Required(ErrorMessage = "El apellido es obligatorio.")]
+    string Apellido,
+
+    [Required(ErrorMessage = "El DNI es obligatorio.")]
+    [RegularExpression(@"^\d{7,8}$", ErrorMessage = "El DNI debe tener entre 7 y 8 dígitos.")]
+    string Dni,
+
+    MemberCategory Categoria,
+
+    [Required(ErrorMessage = "La foto es obligatoria.")]
+    [RegularExpression(@"^https?://.+", ErrorMessage = "La foto debe ser una URL http(s) válida.")]
+    string Foto,
+
+    bool ConfirmarRenovacion = false);
