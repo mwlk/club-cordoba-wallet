@@ -59,7 +59,8 @@ Se decidió:
 
 | Decisión | Elección | Justificación |
 |---|---|---|
-| Detalle de credencial | Vista tipo carnet + sección "detalles de seguridad" colapsable, sin JSON crudo | Pensado desde la UX real del administrador del club, que no tiene conocimiento técnico de DIDs, HMAC o VCs. Los campos técnicos del protocolo (opcionales según el enunciado) se muestran con lenguaje humano ("firma digital válida"), no como datos crudos. |
+| Detalle de credencial | Vista tipo carnet + sección "detalles de seguridad" colapsable, sin JSON crudo | Pensado desde la UX real del administrador del club, que no tiene conocimiento técnico de DIDs, HMAC o VCs. Los campos técnicos del protocolo (opcionales según el enunciado) se muestran con lenguaje humano, no como datos crudos. |
+| Texto "Firma digital: Aplicada" (no "Válida") | `credential-card.component.html` | El componente no ejecuta ninguna verificación real (la verificación de firma está fuera de alcance, 2.2), así que decir "Válida" sería una afirmación sin base — se confirmó incluso que una credencial vencida por renovación (cuyo `proof` ya no coincide con su `validUntil` mutado, ver nota en `Credential.cs`) mostraba igual "Válida". "Aplicada" describe un hecho real (se firmó al emitir) sin implicar un chequeo que no existe. |
 | Foto | Campo requerido, sin fallback automático si se deja vacío | El enunciado define `foto` como "Input usuario" — el sistema no debe generar el dato por su cuenta. |
 | Arquitectura Angular | NgModules + lazy loading (no standalone components) | Decisión explícita del desarrollador para reforzar la separación de responsabilidades por feature. |
 | Comunicación HTTP | `ApiService` base, consumido por `CredentialsService` | Un solo punto de configuración de base URL e interceptors; los feature services no conocen `HttpClient` directamente. |
