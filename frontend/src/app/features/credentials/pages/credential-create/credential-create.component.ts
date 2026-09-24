@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
@@ -9,6 +9,7 @@ import { MemberSearchResult } from '../../../../core/models/dtos/member-search.r
 import { CanComponentDeactivate } from '../../../../core/guards/unsaved-changes.guard';
 import { CreateCredentialResult } from '../../../../core/models/dtos/create-credential.response';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { MemberSearchComponent } from '../../components/member-search/member-search.component';
 
 // UC01: formulario de alta, campos tal cual la sección 4.1.3 del enunciado
 // (nombre, apellido, DNI, categoría, foto). El buscador de socio es UX
@@ -26,6 +27,8 @@ export class CredentialCreateComponent implements CanComponentDeactivate {
   memberFound = false;
 
   form: FormGroup;
+
+  @ViewChild(MemberSearchComponent) private memberSearch?: MemberSearchComponent;
 
   constructor(
     private fb: FormBuilder,
@@ -68,6 +71,10 @@ export class CredentialCreateComponent implements CanComponentDeactivate {
     // popups en paralelo.
     if (this.form.invalid || this.submitting) {
       this.form.markAllAsTouched();
+      // markAllAsTouched no alcanza para el campo DNI: su mat-error vive en
+      // el hijo (member-search), atado a un ErrorStateMatcher que mira este
+      // control externo -> MatInput no se entera solo (ver member-search.component.ts).
+      this.memberSearch?.refreshErrorState();
       return;
     }
 

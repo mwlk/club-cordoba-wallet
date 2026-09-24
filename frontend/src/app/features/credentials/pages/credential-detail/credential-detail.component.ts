@@ -1,12 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CredentialsService } from '../../../../core/services/credentials.service';
 import { CredentialDetail } from '../../../../core/models/credential.model';
 import { ApiResponse } from '../../../../core/models/api-response.model';
 
-// UC03: detalle de una credencial. "No encontrada" (Result pattern con
-// success:false) y "error de conexión" se tratan distinto: lo segundo
-// ofrece reintentar, porque no implica que la credencial no exista.
+// UC03: detalle de una credencial. "No encontrada" (404 que el backend ya
+// manda con result pattern) y "error de conexión" se tratan distinto: lo
+// segundo ofrece reintentar, porque no implica que la credencial no exista.
 @Component({
   selector: 'app-credential-detail',
   standalone: false,
@@ -47,8 +48,12 @@ export class CredentialDetailComponent implements OnInit {
         // fuerza acá (ver docs/decisiones.md, sección Frontend).
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.errored = true;
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 404) {
+          this.notFound = true;
+        } else {
+          this.errored = true;
+        }
         this.cdr.detectChanges();
       }
     });
