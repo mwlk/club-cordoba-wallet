@@ -29,7 +29,7 @@ Se decidió:
 
 | Decisión | Elección | Justificación |
 |---|---|---|
-| Persistencia de la VC | Un solo campo `vc_json` (JSONB), no columnas descompuestas | El JSON que sale del Issuer YA está firmado; reconstruirlo desde columnas arriesga no reproducir bit a bit el documento firmado. Se persiste tal cual. |
+| Persistencia de la VC | Un solo campo `vc_json` tipo `text` (no `jsonb`, no columnas descompuestas) | El JSON que sale del Issuer YA está firmado; reconstruirlo desde columnas descompuestas arriesga no reproducir el documento firmado. Se probó primero con `jsonb`, pero se confirmó (leyendo filas crudas) que Postgres reordena las claves y quita espacios al guardar en ese tipo — el string exacto que se firmó dejaba de ser recuperable byte a byte. Se migró a `text` (migration `VcJsonAsText`) para que el documento persistido sea idéntico, carácter por carácter, al que salió firmado del Issuer, tal como pide el enunciado ("se persiste íntegra"). |
 | Entidad `members` | Tabla separada de `credentials` | Necesaria para cumplir "se genera una vez y se persiste" sin recurrir a lookups sobre datos desnormalizados de `credentials`. |
 | `numeroSocio` | Secuencia de PostgreSQL (`member_number_seq`), formateada a 6 dígitos zero-padded | Persistente entre reinicios (requisito del enunciado), formato acorde al ejemplo (`"000123"`). |
 | Gaps en la secuencia | Aceptados | Las secuencias de PostgreSQL no son transaccionales; si el alta de socio se confirma pero luego falla la firma, ese número no se reutiliza. No hay requisito de continuidad estricta. |

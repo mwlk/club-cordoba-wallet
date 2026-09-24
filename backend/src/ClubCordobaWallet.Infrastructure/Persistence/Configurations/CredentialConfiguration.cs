@@ -16,7 +16,12 @@ public class CredentialConfiguration : IEntityTypeConfiguration<Credential>
 
         // La VC completa (id, type, issuer, credentialSubject, validFrom,
         // validUntil, credentialStatus, proof) tal cual la firmó el Issuer.
-        builder.Property(c => c.VcJson).HasColumnName("vc_json").HasColumnType("jsonb").IsRequired();
+        // `text`, no `jsonb`: jsonb reordena claves y quita espacios al
+        // guardar (confirmado leyendo filas crudas), lo que rompía la
+        // promesa de persistir el documento firmado tal cual salió del
+        // Issuer. Con `text` el string queda byte a byte idéntico al que
+        // se firmó. Ver docs/decisiones.md.
+        builder.Property(c => c.VcJson).HasColumnName("vc_json").HasColumnType("text").IsRequired();
 
         builder.Property(c => c.CreatedAt).HasColumnName("created_at");
     }
