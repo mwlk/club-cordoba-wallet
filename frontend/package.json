@@ -1,6 +1,7 @@
 {
   "name": "club-cordoba-wallet-ui",
   "version": "1.0.0",
+  "packageManager": "pnpm@11.10.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

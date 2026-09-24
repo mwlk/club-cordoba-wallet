@@ -17,6 +17,7 @@ import { CredentialCardComponent } from './components/credential-card/credential
 import { EmptyStateComponent } from './components/empty-state/empty-state.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
+import { MemberAvatarComponent } from './components/member-avatar/member-avatar.component';
 import { ToolbarComponent } from './components/toolbar/toolbar.component';
 import { CredentialStatusPipe } from './pipes/credential-status.pipe';
 import { MemberCategoryPipe } from './pipes/member-category.pipe';
@@ -33,6 +34,7 @@ const MATERIAL_MODULES = [
     EmptyStateComponent,
     ConfirmationDialogComponent,
     LoadingSpinnerComponent,
+    MemberAvatarComponent,
     ToolbarComponent,
     CredentialStatusPipe,
     MemberCategoryPipe
@@ -41,7 +43,7 @@ const MATERIAL_MODULES = [
   exports: [
     CommonModule, FormsModule, ReactiveFormsModule, ...MATERIAL_MODULES,
     CredentialCardComponent, EmptyStateComponent, ConfirmationDialogComponent,
-    LoadingSpinnerComponent, ToolbarComponent, CredentialStatusPipe, MemberCategoryPipe
+    LoadingSpinnerComponent, MemberAvatarComponent, ToolbarComponent, CredentialStatusPipe, MemberCategoryPipe
   ]
 })
 export class SharedModule {}

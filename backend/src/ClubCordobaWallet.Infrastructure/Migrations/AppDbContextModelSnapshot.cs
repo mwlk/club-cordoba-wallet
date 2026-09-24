@@ -40,7 +40,7 @@ namespace ClubCordobaWallet.Infrastructure.Migrations
 
                     b.Property<string>("VcJson")
                         .IsRequired()
-                        .HasColumnType("jsonb")
+                        .HasColumnType("text")
                         .HasColumnName("vc_json");
 
                     b.HasKey("Id");

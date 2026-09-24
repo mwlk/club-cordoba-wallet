@@ -23,9 +23,17 @@ DEBE emitir y persistir la VC firmada por el Issuer.
 
 - **WHEN** el administrador envía el formulario de alta con un DNI que ya
   tiene un `Member` asociado
+- **AND** ese socio no tiene ninguna credencial vigente, o el alta llega
+  confirmada explícitamente como renovación (ver `renovacion-credencial-activa`)
 - **THEN** el sistema reutiliza el `Did` y `numeroSocio` existentes (no
   regenera ninguno de los dos) y persiste una nueva `Credential` para ese
   mismo `Member`
+
+> **MODIFIED por `renovacion-credencial-activa`:** si el socio ya tiene una
+> credencial vigente y el alta no llega confirmada explícitamente
+> (`confirmarRenovacion: true`), el sistema NO ejecuta este escenario —
+> responde con error (`ActiveCredentialExists`) sin persistir nada. Ver
+> requisitos completos en `specs/renovacion-credencial-activa/spec.md`.
 
 #### Scenario: Falla la firma del Issuer con socio nuevo
 

@@ -1,5 +1,7 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { AbstractControl, FormControl } from '@angular/forms';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatInput } from '@angular/material/input';
 import { Observable, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, startWith, switchMap, tap } from 'rxjs/operators';
 import { CredentialsService } from '../../../../core/services/credentials.service';
@@ -22,9 +24,25 @@ export class MemberSearchComponent {
   @Output() memberNotFound = new EventEmitter<void>();
   @Output() dniChange = new EventEmitter<string>();
 
+  // Control del formulario padre que valida el DNI (requerido + 7-8 dígitos).
+  // El estado de error se pinta acá para que el campo no quede sin feedback.
+  @Input() errorControl: AbstractControl | null = null;
+
+  // mat-form-field solo muestra su <mat-error> cuando el control que él
+  // mismo maneja (dniControl, siempre válido: es solo el input de búsqueda)
+  // está en estado de error -> sin este matcher, el *ngIf del mat-error
+  // nunca se pinta aunque errorControl (el control real del form padre)
+  // esté inválido y touched. Verificado en el navegador: sin esto, el
+  // <mat-error> ni siquiera llega a crearse en el DOM.
+  readonly errorStateMatcher: ErrorStateMatcher = {
+    isErrorState: () => !!this.errorControl && this.errorControl.invalid && this.errorControl.touched
+  };
+
   readonly dniControl = new FormControl('', { nonNullable: true });
   candidates$: Observable<MemberSearchResult[]>;
   justSelected = false;
+
+  @ViewChild(MatInput) private matInput?: MatInput;
 
   constructor(private credentialsService: CredentialsService, private cdr: ChangeDetectorRef) {
     this.candidates$ = this.dniControl.valueChanges.pipe(
@@ -50,6 +68,16 @@ export class MemberSearchComponent {
         );
       })
     );
+  }
+
+  // MatInput cachea errorState y solo lo recalcula con eventos propios del
+  // control que él maneja (dniControl) -> como errorControl vive afuera,
+  // marcarlo touched no dispara ese recálculo por sí solo (confirmado en el
+  // navegador: ni un detectChanges manual alcanza). El padre llama esto
+  // explícitamente cuando intenta enviar el form con el DNI inválido.
+  refreshErrorState(): void {
+    this.matInput?.updateErrorState();
+    this.cdr.detectChanges();
   }
 
   select(member: MemberSearchResult): void {

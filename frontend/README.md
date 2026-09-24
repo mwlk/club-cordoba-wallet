@@ -4,21 +4,24 @@ Angular 22 · Angular Material · NgModules con lazy loading
 
 ## Instalar dependencias
 
+El proyecto usa **pnpm** (ver `pnpm-lock.yaml` y `packageManager` en `package.json`) — no usar `npm install`, ignora el lockfile y puede instalar versiones distintas.
+
 ```bash
-npm install
+corepack enable   # si no lo tenés
+pnpm install
 ```
 
 ## Levantar en desarrollo
 
 ```bash
-npm start
+pnpm start
 ```
 
 Queda en `http://localhost:4200`, apuntando a `http://localhost:5000/api` (ver `src/environments/environment.ts`). Requiere el backend corriendo.
 
 ## Levantar con Docker
 
-Ver `docker-compose.yml` en la raíz del repo — el frontend se sirve con nginx sobre el build de producción (configuración `docker`, ver `src/environments/environment.docker.ts`).
+Ver `docker-compose.yml` en la raíz del repo. El frontend se compila con la configuración `production` de Angular (`environment.prod.ts`, `apiUrl: '/api'` relativo) y se sirve con nginx, que hace de reverse proxy: reenvía `/api/*` al contenedor `api` por la red interna de Docker (ver `nginx.conf`). Por eso el frontend no necesita saber host ni puerto del backend — ver [docs/decisiones.md](../docs/decisiones.md#infraestructura--docker).
 
 ## Estructura
 

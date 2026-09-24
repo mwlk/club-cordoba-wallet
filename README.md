@@ -2,6 +2,33 @@
 
 Prueba técnica: sistema de emisión y gestión de credenciales digitales verificables para los socios de un club de fútbol. Separa el rol de negocio (**Tenant**, el club) del rol de emisión (**Issuer**), que firma criptográficamente cada credencial (HMAC-SHA256, mock de firma digital) para garantizar su integridad.
 
+## Cómo levantar el proyecto
+
+**Requisito:** tener [Docker](https://docs.docker.com/get-docker/) instalado (incluye Docker Compose).
+
+**Un solo comando, sin ningún paso previo** (no hace falta crear `.env`, ni generar migrations, ni instalar nada a mano):
+
+```bash
+docker-compose up --build
+```
+
+La primera vez tarda unos minutos (descarga imágenes base y compila backend/frontend). Al terminar:
+
+- **Frontend**: http://localhost:4200
+- **Backend**: http://localhost:5000
+
+Postgres, la migración inicial de la base y la conexión entre los 3 servicios quedan resueltos solos. No hay ningún valor hardcodeado: toda la configuración (contraseña de la base, clave de firma del Issuer, orígenes CORS) sale de variables de entorno con default de desarrollo ya definido en `docker-compose.yml` — ver el detalle en [docs/decisiones.md](docs/decisiones.md#infraestructura--docker).
+
+Para usar tus propios valores en vez de los defaults de desarrollo (opcional, no necesario para evaluar el proyecto):
+
+```bash
+cp .env.example .env
+# editar .env con tus valores
+docker-compose up --build
+```
+
+Instrucciones para levantar cada parte sin Docker (por si hace falta debuggear algo puntual): [backend/README.md](backend/README.md) y [frontend/README.md](frontend/README.md).
+
 ## Arquitectura
 
 ```mermaid
@@ -23,25 +50,6 @@ Detalle completo en [docs/arquitectura.md](docs/arquitectura.md).
 - **Frontend**: Angular 22 + Angular Material, NgModules con lazy loading
 - **Base de datos**: PostgreSQL 18 (JSONB para la credencial firmada, EF Core Migrations)
 - **Infra**: Docker Compose
-
-## Cómo levantar el proyecto
-
-### Con Docker (recomendado)
-
-```bash
-cp .env.example .env
-# completar HMAC_SECRET_KEY en .env con cualquier valor
-docker-compose up --build
-```
-
-- Frontend: http://localhost:4200
-- Backend: http://localhost:5000
-
-> **Importante:** antes del primer `docker-compose up`, hay que generar la migration inicial de EF Core — ver [backend/README.md](backend/README.md#primer-paso-obligatorio--generar-la-migration-inicial).
-
-### Local (sin Docker)
-
-Ver instrucciones detalladas en [backend/README.md](backend/README.md) y [frontend/README.md](frontend/README.md).
 
 ## Estructura del repositorio
 

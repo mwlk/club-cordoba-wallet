@@ -7,6 +7,7 @@ import { CredentialListItem, CredentialDetail } from '../models/credential.model
 import { CreateCredentialRequest } from '../models/dtos/create-credential.request';
 import { CreateCredentialResult } from '../models/dtos/create-credential.response';
 import { MemberSearchResult } from '../models/dtos/member-search.response';
+import { ActiveCredentialResult } from '../models/dtos/active-credential.response';
 
 @Injectable({ providedIn: 'root' })
 export class CredentialsService {
@@ -27,5 +28,10 @@ export class CredentialsService {
   searchMembers(dniPrefix: string): Observable<ApiResponse<MemberSearchResult[]>> {
     const params = new HttpParams().set('dni', dniPrefix);
     return this.api.get<ApiResponse<MemberSearchResult[]>>('credentials/members/search', params);
+  }
+
+  getActiveCredential(dni: string): Observable<ApiResponse<ActiveCredentialResult | null>> {
+    const params = new HttpParams().set('dni', dni);
+    return this.api.get<ApiResponse<ActiveCredentialResult | null>>('credentials/members/active-credential', params);
   }
 }

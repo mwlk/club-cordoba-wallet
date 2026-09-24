@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: vcwallet
       POSTGRES_PASSWORD: ${DB_PASSWORD:-devpass}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
@@ -23,16 +23,25 @@ services:
       Issuer__VerificationMethod: "did:example:futbol#key-1"
       Issuer__HmacKey: ${HMAC_SECRET_KEY:-dev-secret-key-change-me}
       Cors__AllowedOrigins: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
+      # Puerto interno donde escucha Kestrel dentro del container (no el
+      # publicado en el host, ese es API_PORT). Soportado nativo desde
+      # las imágenes .NET 8+.
+      ASPNETCORE_HTTP_PORTS: ${API_INTERNAL_PORT:-8080}
     ports:
-      - "5000:8080"
+      - "${API_PORT:-5000}:${API_INTERNAL_PORT:-8080}"
     depends_on:
       db:
         condition: service_healthy
 
   ui:
     build: ./frontend
+    environment:
+      # Mismos valores que arriba, para que nginx.conf.template (envsubst)
+      # y el target del puerto publicado coincidan siempre.
+      UI_INTERNAL_PORT: ${UI_INTERNAL_PORT:-80}
+      API_INTERNAL_PORT: ${API_INTERNAL_PORT:-8080}
     ports:
-      - "4200:80"
+      - "${UI_PORT:-4200}:${UI_INTERNAL_PORT:-80}"
     depends_on:
       - api
 

@@ -5,6 +5,7 @@ using ClubCordobaWallet.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
+using System.Resources;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,28 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// 404 global con result pattern: las rutas que ninguna acción matchea
+// (p. ej. /api/credentials/abc con la constraint {id:guid}) llegan acá
+// con 404 y body vacío. Los 404 que el controller ya escribe con body
+// (NotFound(ToResponse(result))) tienen HasStarted=true y se saltean.
+app.UseStatusCodePages(async statusContext =>
+{
+    if (statusContext.HttpContext.Response.StatusCode != StatusCodes.Status404NotFound) return;
+
+    var errorsRm = new ResourceManager(
+        "ClubCordobaWallet.Infrastructure.Resources.Errors",
+        typeof(ClubCordobaWallet.Infrastructure.Services.TenantService).Assembly);
+
+    statusContext.HttpContext.Response.ContentType = "application/json";
+    await statusContext.HttpContext.Response.WriteAsJsonAsync(new
+    {
+        success = false,
+        message = errorsRm.GetString("ResourceNotFound"),
+        data = (object?)null
+    });
+});
+
 app.UseCors("AllowFrontend");
 app.UseAuthorization();
 app.MapControllers();
