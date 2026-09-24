@@ -21,7 +21,7 @@ Queda en `http://localhost:4200`, apuntando a `http://localhost:5000/api` (ver `
 
 ## Levantar con Docker
 
-Ver `docker-compose.yml` en la raíz del repo. El frontend se compila con la configuración `production` de Angular (`environment.prod.ts`, `apiUrl: '/api'` relativo) y se sirve con nginx, que hace de reverse proxy: reenvía `/api/*` al contenedor `api` por la red interna de Docker (ver `nginx.conf`). Por eso el frontend no necesita saber host ni puerto del backend — ver [docs/decisiones.md](../docs/decisiones.md#infraestructura--docker).
+Ver `docker-compose.yml` en la raíz del repo. El frontend se compila con la configuración `production` de Angular (`environment.prod.ts`, `apiUrl: '/api'` relativo) y se sirve con nginx, que hace de reverse proxy: reenvía `/api/*` al contenedor `api` por la red interna de Docker (ver `nginx.conf.template`). Por eso el frontend no necesita saber host ni puerto del backend — ver [docs/decisiones.md](../docs/decisiones.md#infraestructura--docker).
 
 ## Estructura
 

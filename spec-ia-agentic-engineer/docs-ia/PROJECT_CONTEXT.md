@@ -27,9 +27,10 @@ fidelidad estricta a la spec W3C VC/DID, paginación.
 - **Frontend**: Angular 22 (`^22.0.0`) + Angular Material, NgModules con lazy
   loading (no standalone components — decisión explícita), `ApiService` base
   + `CredentialsService`, interceptors de error y loading.
-- **Base de datos**: PostgreSQL (JSONB para persistir la VC firmada tal cual,
-  EF Core Migrations aplicadas automáticamente al arrancar la API). Ver
-  decisión de versión en "Decisiones activas" abajo.
+- **Base de datos**: PostgreSQL (`vc_json` en `text` para persistir la VC
+  firmada byte a byte tal cual — `jsonb` reordena claves y rompe eso, ver
+  decisiones.md —, EF Core Migrations aplicadas automáticamente al arrancar
+  la API). Ver decisión de versión en "Decisiones activas" abajo.
 - **Infra**: Docker Compose (`db`, `api`, `ui`); alternativa 100% local
   documentada en `backend/README.md` / `frontend/README.md`.
 - **Testing**: xUnit + FluentAssertions. Unit tests sin Docker
@@ -67,7 +68,7 @@ club-cordoba-wallet/
 ## Persistencia
 
 - `members` (uuid id, did único, member_number único secuencial zero-padded 6 dígitos, first_name, last_name, dni único, created_at).
-- `credentials` (uuid id, member_id FK, `vc_json` JSONB con la VC completa firmada, created_at).
+- `credentials` (uuid id, member_id FK, `vc_json` en `text` con la VC completa firmada, created_at).
 - Secuencia PostgreSQL `member_number_seq` para `numeroSocio` (persistente entre reinicios, gaps aceptados si el alta de socio se confirma pero la firma falla después).
 - Migrations EF Core, **ya generadas e incluidas en el repo** (`backend/src/ClubCordobaWallet.Infrastructure/Migrations/`), se aplican solas al arrancar la API. Solo generar una nueva si se modifica el modelo (ver `backend/README.md`).
 
@@ -85,7 +86,7 @@ Ninguna real. El "Issuer" es un servicio in-process (no HTTP) dentro del mismo b
 ## Convenciones de tests
 
 - Unit tests de servicios/handlers (el más crítico: `IssuerServiceTests`, valida encoding/orden de claves/formato de fechas de la canonicalización).
-- Integration tests de endpoints contra PostgreSQL real vía Testcontainers (evita falsos positivos de un motor in-memory que no reproduce JSONB/secuencias).
+- Integration tests de endpoints contra PostgreSQL real vía Testcontainers (evita falsos positivos de un motor in-memory que no reproduce comportamiento real de tipos de columna/secuencias).
 - "Hecho" = tests pasando + verificación manual de UC01/UC02 end-to-end (front + back + DB).
 
 ## Comandos útiles

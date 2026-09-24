@@ -10,11 +10,11 @@ cero, respeta y corrige lo ya generado siguiendo el enunciado (`../../../init.tx
 ## Contexto del proyecto
 
 - Proyecto: club-cordoba-wallet — wallet de credenciales verificables (VC mock, HMAC-SHA256) para socios de un club de fútbol.
-- Stack: .NET 10 / ASP.NET Core Web API + Angular 22 + Angular Material + PostgreSQL (JSONB) + EF Core Migrations + Docker Compose.
+- Stack: .NET 10 / ASP.NET Core Web API + Angular 22 + Angular Material + PostgreSQL (`vc_json` en `text`, no `jsonb` — ver decisiones.md) + EF Core Migrations + Docker Compose.
 - Tipo de sistema: API + SPA, dos casos de uso (alta y listado de credenciales), sin auth.
 - Modulos principales: `Domain` / `Application` (CQRS manual, `Result<T>`) / `Infrastructure` (EF Core, `IssuerService`, `TenantService`) / `Api` (`CredentialsController` único) en backend; `core` / `shared` / `features/credentials` en frontend.
 - Punto de entrada: `CredentialsController` (backend), `features/credentials` (frontend).
-- Persistencia: PostgreSQL — tablas `members` y `credentials` (`vc_json` JSONB), secuencia `member_number_seq`.
+- Persistencia: PostgreSQL — tablas `members` y `credentials` (`vc_json` en `text`, byte-exacto a lo firmado por el Issuer), secuencia `member_number_seq`.
 - Integraciones: ninguna externa — el Issuer es un servicio in-process, no un endpoint.
 
 ## Responsabilidades
