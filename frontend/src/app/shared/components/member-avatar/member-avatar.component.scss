@@ -1,0 +1,22 @@
+.member-avatar {
+  width: var(--avatar-size, 44px);
+  height: var(--avatar-size, 44px);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--cc-radius-md);
+  background: var(--cc-brand-soft);
+  color: var(--cc-brand-on-soft);
+  font-weight: 600;
+  font-size: calc(var(--avatar-size, 44px) * 0.42);
+  letter-spacing: 0.02em;
+  overflow: hidden;
+}
+
+.member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

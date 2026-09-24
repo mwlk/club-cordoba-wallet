@@ -1,0 +1,10 @@
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--cc-space-4);
+}
+
+.not-found__cta {
+  min-width: 220px;
+}

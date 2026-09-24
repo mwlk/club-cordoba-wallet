@@ -18,7 +18,7 @@ flowchart TB
         ISSUER --> REPO
     end
 
-    REPO -->|EF Core| DB[("PostgreSQL 17")]
+    REPO -->|EF Core| DB[("PostgreSQL 18")]
 ```
 
 ## Capas (Clean layered)
@@ -33,9 +33,11 @@ ClubCordobaWallet.Api             → Controllers, middleware, Program.cs, confi
 
 Cada capa expone su propio `DependencyInjection.cs` (`AddApplication()`, `AddInfrastructure()`), registrado en `Program.cs` sin que la Api conozca los detalles internos de cada capa.
 
+Dentro de `Application`, `Common/` e `Interfaces/` son transversales (usados por cualquier feature); las features de negocio viven bajo `Features/` (hoy sólo `Features/Credentials/`, con `Commands/`, `Queries/` y `Dtos/` propios) — evita que una feature quede al mismo nivel que el código transversal.
+
 ## Flujo UC01 — Alta de credencial
 
-1. El frontend busca al socio por DNI (`GET /credentials/members/search`) para autocompletar — opcional, no bloqueante.
+1. El frontend busca socios por **prefijo** de DNI (`GET /credentials/members/search?dni=`, reactivo con debounce) para autocompletar — opcional, no bloqueante. Devuelve hasta 10 candidatos; el operador elige uno de una lista (o sigue tipeando el form a mano si es socio nuevo).
 2. El admin completa/confirma nombre, apellido, DNI, categoría y foto, y envía el form.
 3. `POST /credentials` llega al `CredentialsController`, que invoca `CreateCredentialCommandHandler`.
 4. El handler busca un `Member` existente por DNI; si no existe, lo crea (nuevo DID + siguiente `numeroSocio` de la secuencia).
@@ -46,8 +48,8 @@ Cada capa expone su propio `DependencyInjection.cs` (`AddApplication()`, `AddInf
    - Calcula `HMAC-SHA256` sobre ese JSON con la clave secreta (env var).
    - Arma el `proof` y devuelve la VC completa como JSON.
    - Si la clave HMAC no está configurada, lanza `IssuerSigningException`.
-7. Si el paso 6 falló, el handler devuelve `Result.Fail` — **no se persiste nada** (ni el `Member` recién creado en memoria, dado que el `SaveChanges` de `Member` ocurre antes pero la credencial nunca se persiste).
-8. Si tuvo éxito, se persiste el `Credential` con la VC completa en `vc_json`.
+7. Si el paso 6 falló, el handler devuelve `Result.Fail` — **no se persiste nada**: `Member` y `Credential` se agregan al `DbContext` sin commit propio, y el único `SaveChangesAsync` (vía `IUnitOfWork`) recién se ejecuta después de que el Issuer confirma la firma.
+8. Si tuvo éxito, se ejecuta ese único `SaveChangesAsync`: `Member` (si es nuevo) y `Credential` con la VC completa en `vc_json` quedan persistidos juntos.
 9. El controller responde con el DTO mínimo (`memberNumber`, `validFrom`, `validUntil`) para la pantalla de confirmación.
 
 ## Flujo UC02 — Listado

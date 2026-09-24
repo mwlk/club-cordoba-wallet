@@ -1,0 +1,4 @@
+<div class="member-avatar" [style.--avatar-size.px]="size">
+  <img *ngIf="!showInitials" [src]="photo" [alt]="'Foto de ' + name" (error)="imageFailed = true" loading="lazy">
+  <span *ngIf="showInitials" aria-hidden="true">{{ initials }}</span>
+</div>
