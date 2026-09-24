@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: vcwallet
       POSTGRES_PASSWORD: ${DB_PASSWORD:-devpass}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
@@ -24,7 +24,7 @@ services:
       Issuer__HmacKey: ${HMAC_SECRET_KEY:-dev-secret-key-change-me}
       Cors__AllowedOrigins: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
     ports:
-      - "5000:8080"
+      - "${API_PORT:-5000}:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -32,7 +32,7 @@ services:
   ui:
     build: ./frontend
     ports:
-      - "4200:80"
+      - "${UI_PORT:-4200}:80"
     depends_on:
       - api
 
