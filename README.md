@@ -48,7 +48,7 @@ Detalle completo en [docs/arquitectura.md](docs/arquitectura.md).
 
 - **Backend**: .NET 10, Clean layered (Domain/Application/Infrastructure/Api), CQRS manual
 - **Frontend**: Angular 22 + Angular Material, NgModules con lazy loading
-- **Base de datos**: PostgreSQL 18 (JSONB para la credencial firmada, EF Core Migrations)
+- **Base de datos**: PostgreSQL 18 (columna `text` para la credencial firmada — ver [decisiones.md](docs/decisiones.md#modelo-de-datos), EF Core Migrations)
 - **Infra**: Docker Compose
 
 ## Estructura del repositorio

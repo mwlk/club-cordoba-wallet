@@ -74,7 +74,7 @@ Se decidió:
 | Decisión | Elección | Justificación |
 |---|---|---|
 | Alcance | Unit tests (servicios, handlers) + Integration tests (endpoints con Testcontainers) | El enunciado no exige tests explícitamente, pero la "calidad de código" se evalúa; el `IssuerService` es el componente más crítico y el que más fácil se rompe silenciosamente (encoding, orden de claves, formato de fechas). |
-| DB para integration tests | PostgreSQL real vía Testcontainers | Evita falsos positivos de un motor in-memory que no reproduce el comportamiento real de JSONB/secuencias. |
+| DB para integration tests | PostgreSQL real vía Testcontainers | Evita falsos positivos de un motor in-memory que no reproduce el comportamiento real de tipos de columna (`text`)/secuencias. |
 
 ## Infraestructura / Docker
 
