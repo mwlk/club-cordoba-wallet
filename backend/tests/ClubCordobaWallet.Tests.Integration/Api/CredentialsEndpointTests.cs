@@ -71,6 +71,38 @@ public class CredentialsEndpointTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Get_Credential_By_Id_Not_Found_Returns_Result_Pattern_404()
+    {
+        // Un GUID bien formado que no existe -> 404 con result pattern
+        // ({success:false, message, data:null}), no un body vacío.
+        var response = await _client.GetAsync($"/api/credentials/{Guid.NewGuid()}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        var body = await response.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+        body.GetProperty("success").GetBoolean().Should().BeFalse();
+        body.GetProperty("message").GetString().Should().NotBeNullOrWhiteSpace();
+        body.GetProperty("data").ValueKind.Should().Be(System.Text.Json.JsonValueKind.Null);
+    }
+
+    [Fact]
+    public async Task Get_Unmatched_Route_Returns_Result_Pattern_404()
+    {
+        // Id con formato inválido y ruta desconocida: ninguna acción matchea
+        // -> el fallback global de 404 mantiene el result pattern.
+        var invalidIdResponse = await _client.GetAsync("/api/credentials/not-a-guid");
+        invalidIdResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        var invalidIdBody = await invalidIdResponse.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+        invalidIdBody.GetProperty("success").GetBoolean().Should().BeFalse();
+        invalidIdBody.GetProperty("data").ValueKind.Should().Be(System.Text.Json.JsonValueKind.Null);
+
+        var unknownRouteResponse = await _client.GetAsync("/api/unknown-route");
+        unknownRouteResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        var unknownRouteBody = await unknownRouteResponse.Content.ReadFromJsonAsync<System.Text.Json.JsonElement>();
+        unknownRouteBody.GetProperty("success").GetBoolean().Should().BeFalse();
+        unknownRouteBody.GetProperty("data").ValueKind.Should().Be(System.Text.Json.JsonValueKind.Null);
+    }
+
+    [Fact]
     public async Task Search_Member_Not_Found_Returns_200_With_Empty_List()
     {
         // mejora-busqueda-socio: la búsqueda es por prefijo y siempre
